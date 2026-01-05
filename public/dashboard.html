@@ -153,121 +153,119 @@
 
 <!-- ================= FIREBASE ================= -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-  import { updateDoc, doc } from
-"https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-import { getAuth, signOut, onAuthStateChanged } from
-  "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import { getFirestore, collection, getDocs }
-  from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-window.changeStatus = async function (docId, newStatus) {
-  try {
-    await updateDoc(
-      doc(db, "applications", docId),
-      { status: newStatus }
-    );
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getAuth, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    updateDoc,
+    doc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-    console.log("Status updated:", newStatus);
+  /* ================= FIREBASE INIT ================= */
+  const firebaseConfig = {
+    apiKey: "AIzaSyA-iZvVroV-H6aRs7X-mlnt_ra3_vnaNzg",
+    authDomain: "allinone-aa89.firebaseapp.com",
+    projectId: "allinone-aa89"
+  };
 
-  } catch (error) {
-    console.error("Status update error:", error);
-    alert("स्थिति बदलने में समस्या आई");
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  /* ================= AUTH PROTECT ================= */
+  onAuthStateChanged(auth, user => {
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      loadData();
+    }
+  });
+
+  window.logout = () => {
+    signOut(auth).then(() => {
+      window.location.href = "login.html";
+    });
+  };
+
+  /* ================= LOAD TABLE ================= */
+  async function loadData() {
+    const table = document.getElementById("dataTable");
+    table.innerHTML = "";
+
+    const snap = await getDocs(collection(db, "applications"));
+
+    snap.forEach(docc => {
+      const d = docc.data();
+      table.innerHTML += `
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 font-bold text-blue-800 underline cursor-pointer"
+              onclick="openDetails('${docc.id}')">
+            ${d.applicantName || "-"}
+          </td>
+
+          <td class="px-4 py-3">${d.serviceType || "-"}</td>
+          <td class="px-4 py-3">${d.samagraId || "-"}</td>
+
+          <td class="px-4 py-3">
+            <select
+              class="border rounded px-2 py-1 font-bold text-sm
+                ${d.status === 'complete' ? 'text-green-600' :
+                  d.status === 'reject' ? 'text-red-600' :
+                  'text-blue-600'}"
+              onchange="changeStatus('${docc.id}', this.value)">
+              
+              <option value="pending" ${d.status === 'pending' ? 'selected' : ''}>pending</option>
+              <option value="complete" ${d.status === 'complete' ? 'selected' : ''}>complete</option>
+              <option value="reject" ${d.status === 'reject' ? 'selected' : ''}>reject</option>
+            </select>
+          </td>
+        </tr>
+      `;
+    });
   }
-};
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA-iZvVroV-H6aRs7X-mlnt_ra3_vnaNzg",
-  authDomain: "allinone-aa89.firebaseapp.com",
-  projectId: "allinone-aa89"
-};
+  /* ================= STATUS UPDATE ================= */
+  window.changeStatus = async function (docId, newStatus) {
+    try {
+      await updateDoc(doc(db, "applications", docId), {
+        status: newStatus
+      });
+      loadData(); // refresh table
+    } catch (e) {
+      alert("स्थिति बदलने में समस्या आई");
+      console.error(e);
+    }
+  };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+  /* ================= DETAILS MODAL ================= */
+  window.openDetails = async function (id) {
+    const snap = await getDoc(doc(db, "applications", id));
+    if (!snap.exists()) return;
 
-// 🔒 Auth protect
-onAuthStateChanged(auth, user => {
-  if (!user) window.location.href = "login.html";
-  else loadData();
-});
+    const d = snap.data();
+    document.getElementById("detailBody").innerHTML = `
+      <div><b>नाम:</b> ${d.applicantName || "-"}</div>
+      <div><b>पिता का नाम:</b> ${d.fatherName || "-"}</div>
+      <div><b>सेवा:</b> ${d.serviceType || "-"}</div>
+      <div><b>समग्र ID:</b> ${d.samagraId || "-"}</div>
+      <div><b>आधार:</b> ${d.aadhaar || "-"}</div>
+      <div><b>मोबाइल:</b> ${d.mobile || "-"}</div>
+      <div><b>आय:</b> ₹ ${d.annualIncome || "-"}</div>
+      <div><b>स्थिति:</b> ${d.status || "pending"}</div>
+      <div class="md:col-span-2"><b>पता:</b> ${d.fullAddress || "-"}</div>
+    `;
 
-// 🔴 Logout
-window.logout = () => {
-  signOut(auth).then(() => {
-    window.location.href = "login.html";
-  });
-};
+    document.getElementById("detailModal").classList.remove("hidden");
+    document.getElementById("detailModal").classList.add("flex");
+  };
 
-// 📥 Load Data
-async function loadData() {
-  const table = document.getElementById("dataTable");
-  table.innerHTML = "";
-
-  const snap = await getDocs(collection(db, "applications"));
-  snap.forEach(doc => {
-    const d = doc.data();
-    table.innerHTML += `
-      <tr class="hover:bg-gray-50 cursor-pointer">
-        <td class="px-4 py-3 font-bold text-blue-800 cursor-pointer underline"
-    onclick="openDetails('${doc.id}')">
-  ${d.applicantName || "-"}
-</td>
-        <td class="px-4 py-3">${d.serviceType || "-"}</td>
-        <td class="px-4 py-3">${d.samagraId || "-"}</td>
-<td class="px-4 py-3">
-  <select
-    class="border rounded px-2 py-1 text-sm font-bold
-      ${d.status === 'complete' ? 'text-green-600' :
-        d.status === 'reject' ? 'text-red-600' :
-        'text-blue-600'}"
-    onchange="changeStatus('${doc.id}', this.value)">
-    
-    <option value="pending" ${d.status === 'pending' ? 'selected' : ''}>
-      pending
-    </option>
-
-    <option value="complete" ${d.status === 'complete' ? 'selected' : ''}>
-      complete
-    </option>
-
-    <option value="reject" ${d.status === 'reject' ? 'selected' : ''}>
-      reject
-    </option>
-  </select>
-</td>
-      </tr>`;
-  });
-}
-  import { doc, getDoc } from
-  "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-window.openDetails = async function(id) {
-  const ref = doc(db, "applications", id);
-  const snap = await getDoc(ref);
-
-  if (!snap.exists()) return;
-
-  const d = snap.data();
-  document.getElementById("detailBody").innerHTML = `
-    <div><b>नाम:</b> ${d.applicantName || "-"}</div>
-    <div><b>पिता का नाम:</b> ${d.fatherName || "-"}</div>
-    <div><b>सेवा प्रकार:</b> ${d.serviceType || "-"}</div>
-    <div><b>समग्र ID:</b> ${d.samagraId || "-"}</div>
-    <div><b>आधार:</b> ${d.aadhaar || "-"}</div>
-    <div><b>मोबाइल:</b> ${d.mobile || "-"}</div>
-    <div><b>आय:</b> ₹ ${d.annualIncome || "-"}</div>
-    <div><b>स्थिति:</b> ${d.status || "PENDING"}</div>
-    <div class="md:col-span-2"><b>पता:</b> ${d.fullAddress || "-"}</div>
-  `;
-
-  document.getElementById("detailModal").classList.remove("hidden");
-  document.getElementById("detailModal").classList.add("flex");
-};
-
-window.closeDetails = function() {
-  document.getElementById("detailModal").classList.add("hidden");
-};
-
+  window.closeDetails = function () {
+    document.getElementById("detailModal").classList.add("hidden");
+  };
 </script>
 
 </body>
