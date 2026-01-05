@@ -95,7 +95,7 @@
             </div>
 
             <!-- Login Form -->
-            <form action="#" method="post" class="space-y-6">
+<form id="loginForm" action="#" method="post" class="space-y-6">
 
                 <!-- User ID Field -->
                 <div>
@@ -106,9 +106,10 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fas fa-user"></i>
                         </span>
-                        <input type="text" name="username" required
-                            placeholder="दर्ज करें"
-                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                       <input type="email" name="email" required
+  placeholder="ईमेल आईडी दर्ज करें"
+  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl">
+
                     </div>
                 </div>
 
@@ -213,6 +214,40 @@
         </div>
     </footer>
     <!-- ================= STANDARD FOOTER END ================= -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+  // Firebase config (same project as form)
+  const firebaseConfig = {
+    apiKey: "AIzaSyA-iZvVroV-H6aRs7X-mlnt_ra3_vnaNzg",
+    authDomain: "allinone-aa89.firebaseapp.com",
+    projectId: "allinone-aa89"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Login submit
+  document.getElementById("loginForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        alert("लॉगिन सफल ✅");
+        window.location.href = "dashboard.html";
+      })
+      .catch((error) => {
+        alert("लॉगिन असफल ❌\n" + error.message);
+      });
+  });
+</script>
 
 </body>
 </html>
