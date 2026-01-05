@@ -196,8 +196,9 @@
         // 🔒 Auth Check
         onAuthStateChanged(auth, user => {
             if (!user) {
-                // If you want actual protection, redirect to login.html
-                // For now, let's auto sign-in anonymously for testing if needed
+                // Redirect to landing page if not logged in
+                // window.location.href = "index.html"; 
+                // Using anonymous sign-in for preview/test purposes
                 signInAnonymously(auth);
             } else {
                 loadApplications();
@@ -205,7 +206,12 @@
         });
 
         window.logout = () => {
-            signOut(auth).then(() => alert("Logged out successfully"));
+            signOut(auth).then(() => {
+                window.location.href = "index.html";
+            }).catch((error) => {
+                console.error("Logout Error:", error);
+                alert("लॉगआउट में समस्या हुई।");
+            });
         };
 
         // 📥 Load Applications and sort into boxes
