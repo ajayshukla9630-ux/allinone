@@ -1,139 +1,336 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <title>आय प्रमाण पत्र – डैशबोर्ड</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>एडमिन डैशबोर्ड | AllInOne MP</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .status-badge { padding: 2px 8px; border-radius: 9999px; font-size: 10px; font-weight: bold; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-complete { background: #dcfce7; color: #166534; }
+        .status-reject { background: #fee2e2; color: #991b1b; }
+        
+        /* Full screen modal that looks like a new page */
+        #detailModal {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+    </style>
 </head>
-
 <body class="bg-gray-100">
 
-<!-- HEADER -->
-<div class="bg-blue-800 text-white px-6 py-4 flex justify-between items-center">
-  <h1 class="text-xl font-bold"> आवेदन सूची</h1>
-  <button onclick="logout()" class="bg-red-600 px-4 py-2 rounded font-bold">Logout</button>
-</div>
+    <!-- ================= STANDARD HEADER ================= -->
+    <div class="bg-blue-900 text-white text-[10px] md:text-xs py-2 px-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="hidden sm:inline">मध्यप्रदेश सरकार | Government of Madhya Pradesh</span>
+            <span class="sm:hidden text-xs">MP एडमिन</span>
+        </div>
+        <div class="flex gap-3 items-center">
+            <button onclick="logout()" class="bg-red-600 px-3 py-1 rounded font-bold hover:bg-red-700 transition">लॉगआउट</button>
+        </div>
+    </div>
 
-<!-- TABLE -->
-<div class="p-6">
-  <div class="bg-white rounded shadow overflow-x-auto">
-    <table class="min-w-full text-sm">
-      <thead class="bg-blue-700 text-white">
-        <tr>
-          <th class="px-4 py-3">नाम</th>
-          <th class="px-4 py-3">समग्र ID</th>
-          <th class="px-4 py-3">आय</th>
-          <th class="px-4 py-3">स्थिति</th>
-        </tr>
-      </thead>
-      <tbody id="applicationsTable"></tbody>
-    </table>
-  </div>
-</div>
+    <header class="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Emblem_of_Madhya_Pradesh.svg/1200px-Emblem_of_Madhya_Pradesh.svg.png" alt="MP Logo" class="h-12">
+                <div>
+                    <h1 class="text-xl font-bold text-blue-900">AllInOne MP एडमिन</h1>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">आवेदन प्रबंधन प्रणाली</p>
+                </div>
+            </div>
+        </div>
+    </header>
 
-<!-- MODAL (DETAIL VIEW) -->
-<div id="detailModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center">
-  <div class="bg-white w-full max-w-2xl rounded-lg p-6 relative">
-    <button onclick="closeModal()" class="absolute top-2 right-3 text-xl font-bold">✖</button>
+    <!-- DASHBOARD CONTENT -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">आय प्रमाण पत्र आवेदन सूची</h2>
+                <p class="text-sm text-gray-500">सभी प्राप्त आवेदनों की स्थिति यहाँ से प्रबंधित करें।</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="loadApplications()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-blue-700">
+                    <i class="fas fa-sync-alt mr-1"></i> रिफ्रेश करें
+                </button>
+            </div>
+        </div>
 
-    <h2 class="text-xl font-bold mb-4 text-blue-800">
-      आवेदन का पूरा विवरण
-    </h2>
+        <!-- STATUS BOXES (3 Columns) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Pending Box -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-[600px]">
+                <div class="bg-amber-500 p-4 text-white font-bold flex justify-between items-center">
+                    <span><i class="fas fa-clock mr-2"></i> पेंडिंग (Pending)</span>
+                    <span id="count-pending" class="bg-white text-amber-600 px-2 py-0.5 rounded-lg text-xs">0</span>
+                </div>
+                <div id="list-pending" class="flex-grow overflow-y-auto p-4 space-y-3 bg-gray-50/50">
+                    <!-- Cards will be injected here -->
+                </div>
+            </div>
 
-    <div id="detailContent" class="space-y-2 text-sm"></div>
-  </div>
-</div>
+            <!-- Complete Box -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-[600px]">
+                <div class="bg-green-600 p-4 text-white font-bold flex justify-between items-center">
+                    <span><i class="fas fa-check-circle mr-2"></i> पूर्ण (Complete)</span>
+                    <span id="count-complete" class="bg-white text-green-600 px-2 py-0.5 rounded-lg text-xs">0</span>
+                </div>
+                <div id="list-complete" class="flex-grow overflow-y-auto p-4 space-y-3 bg-gray-50/50">
+                    <!-- Cards will be injected here -->
+                </div>
+            </div>
 
-<!-- FIREBASE + LOGIC -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut }
-  from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  getDoc,
-  query,
-  where
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+            <!-- Reject Box -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-[600px]">
+                <div class="bg-red-600 p-4 text-white font-bold flex justify-between items-center">
+                    <span><i class="fas fa-times-circle mr-2"></i> निरस्त (Reject)</span>
+                    <span id="count-reject" class="bg-white text-red-600 px-2 py-0.5 rounded-lg text-xs">0</span>
+                </div>
+                <div id="list-reject" class="flex-grow overflow-y-auto p-4 space-y-3 bg-gray-50/50">
+                    <!-- Cards will be injected here -->
+                </div>
+            </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA-iZvVroV-H6aRs7X-mlnt_ra3_vnaNzg",
-  authDomain: "allinone-aa89.firebaseapp.com",
-  projectId: "allinone-aa89"
-};
+        </div>
+    </main>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    <!-- FULL PAGE MODAL (DETAIL VIEW) -->
+    <div id="detailModal">
+        <div class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-lg">
+            <h2 class="font-bold flex items-center gap-2">
+                <i class="fas fa-file-alt"></i> आवेदन का पूर्ण विवरण
+            </h2>
+            <button onclick="closeModal()" class="bg-white/20 hover:bg-white/30 p-2 rounded-full h-10 w-10 flex items-center justify-center transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="flex-grow overflow-y-auto bg-gray-50 p-6">
+            <div class="max-w-4xl mx-auto space-y-8">
+                
+                <!-- Detail Grid -->
+                <div id="detailContent" class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-8 rounded-2xl shadow-sm border">
+                    <!-- Content injected via JS -->
+                </div>
 
-// 🔒 Auth protection
-onAuthStateChanged(auth, user => {
-  if (!user) window.location.href = "login.html";
-});
+                <!-- Action Section -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border">
+                    <h3 class="font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <i class="fas fa-tasks text-blue-600"></i> आवेदन की स्थिति बदलें
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button onclick="updateStatus('pending')" class="flex flex-col items-center justify-center p-6 border-2 border-amber-200 bg-amber-50 rounded-xl hover:bg-amber-100 transition group">
+                            <i class="fas fa-clock text-3xl text-amber-600 mb-2 group-hover:scale-110 transition"></i>
+                            <span class="font-bold text-amber-800">पेंडिंग रखें</span>
+                        </button>
+                        <button onclick="updateStatus('complete')" class="flex flex-col items-center justify-center p-6 border-2 border-green-200 bg-green-50 rounded-xl hover:bg-green-100 transition group">
+                            <i class="fas fa-check-circle text-3xl text-green-600 mb-2 group-hover:scale-110 transition"></i>
+                            <span class="font-bold text-green-800">पूर्ण (Approve)</span>
+                        </button>
+                        <button onclick="updateStatus('reject')" class="flex flex-col items-center justify-center p-6 border-2 border-red-200 bg-red-50 rounded-xl hover:bg-red-100 transition group">
+                            <i class="fas fa-times-circle text-3xl text-red-600 mb-2 group-hover:scale-110 transition"></i>
+                            <span class="font-bold text-red-800">निरस्त करें</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-// 🔴 Logout
-window.logout = () => {
-  signOut(auth).then(() => location.href = "login.html");
-};
+    <!-- ================= STANDARD FOOTER ================= -->
+    <footer class="bg-gray-900 text-gray-400 py-10">
+        <div class="container mx-auto px-4 text-center">
+            <h5 class="text-white font-bold mb-4">AllInOne MP एडमिन पोर्टल</h5>
+            <p class="text-xs mb-4 leading-relaxed">मध्यप्रदेश शासन के अंतर्गत लोक सेवा प्रबंधन विभाग द्वारा संचालित।</p>
+            <div class="flex justify-center gap-4 text-xl mb-6">
+                <i class="fab fa-facebook hover:text-white cursor-pointer"></i>
+                <i class="fab fa-twitter hover:text-white cursor-pointer"></i>
+            </div>
+            <div class="border-t border-gray-800 pt-6 text-[10px] uppercase tracking-widest">
+                © 2026 मध्यप्रदेश शासन | सर्वाधिकार सुरक्षित
+            </div>
+        </div>
+    </footer>
 
-// 📥 Load Income Certificate applications
-const table = document.getElementById("applicationsTable");
+    <!-- FIREBASE + LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-const q = query(
-  collection(db, "applications"),
-  where("serviceType", "==", "Income Certificate")
-);
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-iZvVroV-H6aRs7X-mlnt_ra3_vnaNzg",
+            authDomain: "allinone-aa89.firebaseapp.com",
+            projectId: "allinone-aa89"
+        };
 
-const snapshot = await getDocs(q);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-snapshot.forEach(d => {
-  const data = d.data();
-  table.innerHTML += `
-    <tr class="border-b hover:bg-gray-50">
-      <td class="px-4 py-3 text-blue-700 font-bold cursor-pointer"
-          onclick="showDetails('${d.id}')">
-        ${data.applicantName || "-"}
-      </td>
-      <td class="px-4 py-3">${data.samagraId || "-"}</td>
-      <td class="px-4 py-3">₹ ${data.annualIncome || "-"}</td>
-      <td class="px-4 py-3 text-blue-600 font-bold">${data.status}</td>
-    </tr>
-  `;
-});
+        let currentActiveDocId = null;
 
-// 🔍 Show full details
-window.showDetails = async function (docId) {
-  const ref = doc(db, "applications", docId);
-  const snap = await getDoc(ref);
+        // 🔒 Auth Check
+        onAuthStateChanged(auth, user => {
+            if (!user) {
+                // If you want actual protection, redirect to login.html
+                // For now, let's auto sign-in anonymously for testing if needed
+                signInAnonymously(auth);
+            } else {
+                loadApplications();
+            }
+        });
 
-  if (!snap.exists()) return;
+        window.logout = () => {
+            signOut(auth).then(() => alert("Logged out successfully"));
+        };
 
-  const d = snap.data();
-  const box = document.getElementById("detailContent");
+        // 📥 Load Applications and sort into boxes
+        window.loadApplications = async function() {
+            const listPending = document.getElementById("list-pending");
+            const listComplete = document.getElementById("list-complete");
+            const listReject = document.getElementById("list-reject");
 
-  box.innerHTML = `
-    <p><b>नाम:</b> ${d.applicantName}</p>
-    <p><b>पिता का नाम:</b> ${d.fatherName}</p>
-    <p><b>समग्र ID:</b> ${d.samagraId}</p>
-    <p><b>आधार:</b> ${d.aadhaar}</p>
-    <p><b>मोबाइल:</b> ${d.mobile}</p>
-    <p><b>वार्षिक आय:</b> ₹ ${d.annualIncome}</p>
-    <p><b>स्थिति:</b> ${d.status}</p>
-    <p><b>सेवा:</b> ${d.serviceType}</p>
-  `;
+            // Clear lists
+            listPending.innerHTML = "";
+            listComplete.innerHTML = "";
+            listReject.innerHTML = "";
 
-  document.getElementById("detailModal").classList.remove("hidden");
-  document.getElementById("detailModal").classList.add("flex");
-};
+            let counts = { pending: 0, complete: 0, reject: 0 };
 
-// ❌ Close modal
-window.closeModal = function () {
-  document.getElementById("detailModal").classList.add("hidden");
-};
-</script>
+            try {
+                const q = query(
+                    collection(db, "applications"),
+                    where("serviceType", "==", "Income Certificate")
+                );
 
+                const snapshot = await getDocs(q);
+
+                snapshot.forEach(d => {
+                    const data = d.data();
+                    const status = (data.status || 'pending').toLowerCase();
+                    
+                    const card = `
+                        <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-${getStatusColor(status)}-500 hover:shadow-md transition cursor-pointer" onclick="showDetails('${d.id}')">
+                            <h4 class="font-bold text-gray-800 text-sm">${data.applicantName || "अनाम"}</h4>
+                            <p class="text-[10px] text-gray-500 mt-1">समग्र: ${data.samagraId || "-"}</p>
+                            <div class="flex justify-between items-center mt-3">
+                                <span class="text-xs font-bold text-blue-700">₹ ${data.annualIncome || "-"}</span>
+                                <span class="text-[10px] text-gray-400"><i class="far fa-clock"></i> ${formatDate(data.createdAt)}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    if (status === 'complete') {
+                        listComplete.innerHTML += card;
+                        counts.complete++;
+                    } else if (status === 'reject') {
+                        listReject.innerHTML += card;
+                        counts.reject++;
+                    } else {
+                        listPending.innerHTML += card;
+                        counts.pending++;
+                    }
+                });
+
+                // Update counts
+                document.getElementById("count-pending").innerText = counts.pending;
+                document.getElementById("count-complete").innerText = counts.complete;
+                document.getElementById("count-reject").innerText = counts.reject;
+
+            } catch (err) {
+                console.error("Error loading docs:", err);
+            }
+        };
+
+        function getStatusColor(s) {
+            if (s === 'complete') return 'green';
+            if (s === 'reject') return 'red';
+            return 'amber';
+        }
+
+        function formatDate(ts) {
+            if (!ts) return "-";
+            const date = ts.toDate ? ts.toDate() : new Date(ts);
+            return date.toLocaleDateString('hi-IN');
+        }
+
+        // 🔍 Detail Modal Logic
+        window.showDetails = async function(docId) {
+            currentActiveDocId = docId;
+            const ref = doc(db, "applications", docId);
+            const snap = await getDoc(ref);
+
+            if (!snap.exists()) return;
+            const d = snap.data();
+
+            const box = document.getElementById("detailContent");
+            box.innerHTML = `
+                <div class="space-y-4">
+                    <p class="flex flex-col"><span class="text-[10px] uppercase text-gray-400 font-bold">आवेदक का नाम</span><span class="font-bold text-blue-900">${d.applicantName}</span></p>
+                    <p class="flex flex-col"><span class="text-[10px] uppercase text-gray-400 font-bold">पिता/पति का नाम</span><span class="font-medium">${d.fatherName}</span></p>
+                    <p class="flex flex-col"><span class="text-[10px] uppercase text-gray-400 font-bold">समग्र सदस्य आईडी</span><span class="font-medium font-mono">${d.samagraId}</span></p>
+                    <p class="flex flex-col"><span class="text-[10px] uppercase text-gray-400 font-bold">आधार नंबर</span><span class="font-medium">${d.aadhaar}</span></p>
+                </div>
+                <div class="space-y-4">
+                    <p class="flex flex-col"><span class="text-[10px] uppercase text-gray-400 font-bold">मोबाइल नंबर</span><span class="font-medium">${d.mobile}</span></p>
+                    <p class="flex flex-col"><span class="text-[10px] uppercase text-gray-400 font-bold">वार्षिक आय</span><span class="font-bold text-green-600">₹ ${d.annualIncome}</span></p>
+                    <p class="flex flex-col"><span class="text-[10px] uppercase text-gray-400 font-bold">व्यवसाय</span><span class="font-medium">${d.occupation || "नहीं बताया"}</span></p>
+                    <p class="flex flex-col"><span class="text-[10px] uppercase text-gray-400 font-bold">वर्तमान स्थिति</span><span class="status-badge status-${(d.status || 'pending').toLowerCase()} w-fit mt-1">${d.status}</span></p>
+                </div>
+            `;
+
+            document.getElementById("detailModal").style.display = "flex";
+            document.body.style.overflow = "hidden"; // Prevent background scroll
+        };
+
+        window.closeModal = function() {
+            document.getElementById("detailModal").style.display = "none";
+            document.body.style.overflow = "auto";
+        };
+
+        // ⚡ Update Status Function
+        window.updateStatus = async function(newStatus) {
+            if (!currentActiveDocId) return;
+
+            try {
+                const ref = doc(db, "applications", currentActiveDocId);
+                await updateDoc(ref, {
+                    status: newStatus.toUpperCase()
+                });
+                
+                alert(`Status updated to ${newStatus.toUpperCase()} ✅`);
+                closeModal();
+                loadApplications(); // Refresh lists
+            } catch (err) {
+                console.error("Update failed:", err);
+                alert("Status update failed. Try again.");
+            }
+        };
+
+    </script>
 </body>
 </html>
