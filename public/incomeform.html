@@ -27,60 +27,7 @@
 <body class="bg-gray-50 flex flex-col min-h-screen">
 
     <!-- ================= STANDARD HEADER START ================= -->
-    <div class="bg-blue-900 text-white text-[10px] md:text-xs py-2 px-4 flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <span class="hidden sm:inline">मध्यप्रदेश सरकार | Government of Madhya Pradesh</span>
-            <span class="sm:hidden text-xs">MP Govt</span>
-        </div>
-        <div class="flex gap-3 md:gap-4 items-center">
-            <a href="#" class="hover:underline">Skip to content</a> |
-            <div class="flex items-center gap-1">
-                <button class="px-1 border border-white/30 rounded">A-</button>
-                <button class="px-1 border border-white/30 rounded">A</button>
-                <button class="px-1 border border-white/30 rounded">A+</button>
-            </div>
-            <select class="bg-transparent border-none text-white text-xs cursor-pointer focus:ring-0">
-                <option class="text-black">हिन्दी</option>
-                <option class="text-black">English</option>
-            </select>
-        </div>
-    </div>
-
-    <header class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3 md:gap-4">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Emblem_of_Madhya_Pradesh.svg/1200px-Emblem_of_Madhya_Pradesh.svg.png" alt="MP Logo" class="h-12 md:h-16">
-                <div>
-                    <h1 class="text-xl md:text-2xl font-bold text-blue-900 leading-tight">AllInOne MP</h1>
-                    <p class="text-[10px] md:text-xs text-gray-600 uppercase tracking-wider">State Services Delivery Gateway</p>
-                </div>
-            </div>
-            
-            <div class="flex gap-4 items-center">
-                <div class="hidden lg:block text-right border-r pr-4">
-                    <p class="text-[10px] text-gray-500 uppercase">हेल्पलाइन</p>
-                   <p class="font-bold text-blue-800">
-                      <a href="https://wa.me/918435273042" target="_blank">8435273042</a>
-                    </p>
-                </div>
-                <button class="bg-blue-600 text-white px-4 md:px-6 py-2 rounded shadow-md font-bold hover:bg-blue-700 transition text-sm">
-                    लॉगिन
-                </button>
-            </div>
-        </div>
-
-        <nav class="bg-blue-800 text-white hidden md:block">
-            <div class="container mx-auto px-4">
-                <ul class="flex py-3 gap-8 text-sm font-medium">
-                    <li><a href="#" class="hover:text-blue-200 flex items-center gap-2 border-b-2 border-transparent hover:border-blue-200 pb-1 transition-all"><i class="fas fa-home"></i> होम</a></li>
-                    <li><a href="#" class="hover:text-blue-200 border-b-2 border-transparent hover:border-blue-200 pb-1 transition-all">नागरिक सेवाएँ</a></li>
-                    <li><a href="#" class="hover:text-blue-200 border-b-2 border-transparent hover:border-blue-200 pb-1 transition-all">योजनाएँ</a></li>
-                    <li><a href="#" class="hover:text-blue-200 border-b-2 border-transparent hover:border-blue-200 pb-1 transition-all">सांख्यिकी</a></li>
-                    <li><a href="#" class="hover:text-blue-200 border-b-2 border-transparent hover:border-blue-200 pb-1 transition-all">शिकायत निवारण</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+  <div id="header"></div>
 
     <!-- MAIN FORM CONTENT -->
     <main class="flex-grow container mx-auto px-4 py-10">
@@ -265,9 +212,7 @@
     </main>
 
     <!-- Simple Footer -->
-    <footer class="bg-white border-t py-6 text-center text-gray-400 text-xs mt-10">
-        <p>© 2026 AllInOne MP | मध्यप्रदेश शासन का डिजिटल सेवा पोर्टल</p>
-    </footer>
+    <div id="footer"></div>
 <script type="module">
 
   // 1️⃣ Firebase imports
@@ -327,65 +272,21 @@ import {
     alert("❌ आवेदन जमा नहीं हुआ, कृपया पुनः प्रयास करें");
   }
 });
+fetch("header.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("header").innerHTML = data;
+    });
 
+  fetch("footer.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("footer").innerHTML = data;
+    });
 
 </script>
-    <footer class="bg-gray-900 text-gray-300">
-        <div class="container mx-auto px-4 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Column 1: About -->
-                <div>
-                    <h5 class="text-white font-bold text-lg mb-4 border-l-4 border-blue-600 pl-3">AllInOne MP</h5>
-                    <p class="text-sm leading-relaxed">
-                        मध्यप्रदेश शासन का एकीकृत पोर्टल नागरिकों को पारदर्शी और त्वरित सरकारी सेवाएँ प्रदान करने के लिए प्रतिबद्ध है।
-                    </p>
-                </div>
-                
-                <!-- Column 2: Quick Links -->
-                <div>
-                    <h5 class="text-white font-bold mb-4">उपयोगी कड़ियाँ</h5>
-                    <ul class="text-sm space-y-2">
-                        <li><a href="#" class="hover:text-blue-400 flex items-center gap-2"><i class="fas fa-chevron-right text-[10px]"></i> एम.पी. ऑनलाइन</a></li>
-                        <li><a href="#" class="hover:text-blue-400 flex items-center gap-2"><i class="fas fa-chevron-right text-[10px]"></i> ई-डिस्ट्रिक्ट पोर्टल</a></li>
-                    </ul>
-                </div>
-
-                <!-- Column 3: Contact -->
-                <div>
-                    <h5 class="text-white font-bold mb-4">सहायता एवं संपर्क</h5>
-                    <ul class="text-sm space-y-3">
-                        <li class="flex items-start gap-3">
-                            <i class="fas fa-headset mt-1 text-blue-500"></i>
-                            <span>सीएम हेल्पलाइन: 181</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i class="fas fa-envelope mt-1 text-blue-500"></i>
-                            <span>support-mp@nic.in</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Column 4: Social & App -->
-                <div>
-                    <h5 class="text-white font-bold mb-4">सोशल मीडिया</h5>
-                    <div class="flex gap-4 mb-6">
-                        <a href="#" class="bg-gray-800 p-2 rounded hover:bg-blue-600 transition"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="bg-gray-800 p-2 rounded hover:bg-blue-400 transition"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="bg-gray-800 p-2 rounded hover:bg-red-600 transition"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-            </div>
-            
+  
             <!-- Bottom Copyright Bar -->
-            <div class="border-t border-gray-800 mt-10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs gap-4">
-                <p>© 2026 AllInOne | मध्यप्रदेश शासन का आधिकारिक पोर्टल</p>
-                <div class="flex items-center gap-2 bg-gray-800 px-3 py-1 rounded">
-                    <span>विज़िटर संख्या:</span>
-                    <span class="text-blue-400 font-bold">12,45,678</span>
-                </div>
-            </div>
-        </div>
-    </footer>
-
+            
 </body>
 </html>
