@@ -263,21 +263,17 @@ window.handleLogout = function () {
         console.error(error);
       });
   };
-    // 🔍 SEARCH FUNCTIONALITY FIX
-const searchInput = document.getElementById("searchInput");
+    const searchInput = document.getElementById("searchInput");
 
+  searchInput.addEventListener("input", () => {
+    const keyword = searchInput.value.toLowerCase();
 
-searchInput.addEventListener("input", () => {
-const keyword = searchInput.value.toLowerCase();
+    const filteredData = allApplications.filter(item =>
+      (item.applicantName || "").toLowerCase().includes(keyword)
+    );
 
-
-const filtered = allApplications.filter(app =>
-(app.applicantName || "").toLowerCase().includes(keyword)
-);
-
-
-renderTable(filtered);
-});
+    renderTable(filteredData);
+  });
 </script>
 
 </body>
