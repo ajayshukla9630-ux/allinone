@@ -11,6 +11,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <!-- Font -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
@@ -28,6 +31,11 @@
         .active-filter {
             border: 2px solid #1e40af !important;
             font-weight: bold;
+        }
+        /* PDF specific styles */
+        #pdfContent {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            color: #333;
         }
     </style>
 </head>
@@ -171,18 +179,18 @@
         <div id="detailBody" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 text-sm max-h-[70vh] overflow-y-auto">
             <!-- Details Injection -->
         </div>
-        <div class="bg-gray-50 px-6 py-4 border-t flex justify-end">
-<button onclick="downloadPDF()"
-  class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700">
-  📄 PDF डाउनलोड करें
-</button>
+        <div class="bg-gray-50 px-6 py-4 border-t flex justify-end gap-3">
+            <button onclick="downloadPDF()" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700">
+                📄 PDF डाउनलोड करें
+            </button>
+            <button onclick="closeDetails()" class="bg-gray-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-gray-600">बंद करें</button>
         </div>
-        
     </div>
-    
 </div>
-    <div id="pdfContent" class="hidden p-8 text-sm">
-  <!-- JS से content आएगा -->
+
+<!-- ================= HIDDEN PDF TEMPLATE ================= -->
+<div id="pdfContent" class="hidden">
+    <!-- Content will be injected via JS -->
 </div>
 
 
@@ -195,16 +203,16 @@
     let allApplications = [];
     let currentUser = null;
 
-    const firebaseConfig = {
-  apiKey: "AIzaSyA-iZvVroV-H6aRs7X-mlnt_ra3_vnaNzg",
-  authDomain: "allinone-aa89.firebaseapp.com",
-  projectId: "allinone-aa89"
-};
-
+    // Environmental variables
+    const firebaseConfig = JSON.parse(__firebase_config);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // Rule 1 Compliance: Strict Path
+    const APPLICATIONS_PATH = ['artifacts', appId, 'public', 'data', 'applications'];
 
     async function initAuth() {
         try {
@@ -230,12 +238,13 @@
     window.handleLogout = async () => {
         try {
             await signOut(auth);
-            location.reload();
+            // Redirecting to index.html as requested
+            window.location.href = "index.html";
         } catch (e) { console.error(e); }
     };
 
     function startListening() {
-            const colRef = collection(db, "applications");
+        const colRef = collection(db, ...APPLICATIONS_PATH);
         
         onSnapshot(colRef, (snapshot) => {
             allApplications = snapshot.docs.map(doc => ({
@@ -258,7 +267,7 @@
         }, (error) => {
             console.error("Firestore error:", error);
             document.getElementById("loadingContent").innerHTML = 
-                `<span class="text-red-500 font-bold"><i class="fas fa-lock mr-2"></i> डेटा एक्सेस करने की अनुमति नहीं है या डेटाबेस उपलब्ध नहीं है।</span>`;
+                `<span class="text-red-500 font-bold"><i class="fas fa-lock mr-2"></i> डेटा एक्सेस करने की अनुमति नहीं है।</span>`;
         });
     }
 
@@ -325,35 +334,76 @@
     window.updateApplicationStatus = async (docId, newStatus) => {
         if (!currentUser) return;
         try {
-            const docRef = doc(db, "applications", docId);
+            const docRef = doc(db, ...APPLICATIONS_PATH, docId);
             await updateDoc(docRef, { status: newStatus });
         } catch (e) {
             console.error("Update error:", e);
         }
     };
 
-        window.openDetails = (id) => {
-    const item = allApplications.find(a => a.id === id);
-    if (!item) return;
+    window.openDetails = (id) => {
+        const item = allApplications.find(a => a.id === id);
+        if (!item) return;
 
-    const detailBody = document.getElementById("detailBody");
+        // Populate Modal
+        const detailBody = document.getElementById("detailBody");
+        let modalHtml = "";
+        
+        // List specific important keys
+        const displayKeys = {
+            "applicantName": "आवेदक का नाम",
+            "fatherName": "पिता/पति का नाम",
+            "serviceType": "सेवा का प्रकार",
+            "samagraId": "समग्र आईडी",
+            "aadhaar": "आधार नंबर",
+            "mobile": "मोबाइल नंबर",
+            "annualIncome": "वार्षिक आय",
+            "fullAddress": "पूरा पता",
+            "status": "आवेदन स्थिति"
+        };
 
-    let html = "";
+        for (const [key, label] of Object.entries(displayKeys)) {
+            if (item[key]) {
+                modalHtml += `
+                    <div class="flex flex-col border-b border-gray-100 pb-2">
+                        <span class="text-gray-500 text-xs">${label}</span>
+                        <span class="font-bold text-base text-gray-800">${item[key]}</span>
+                    </div>
+                `;
+            }
+        }
+        detailBody.innerHTML = modalHtml;
 
-    for (const key in item) {
-        html += `
-            <div class="flex flex-col">
-                <span class="text-gray-500 text-xs">${key}</span>
-                <span class="font-bold text-base">${item[key]}</span>
+        // Populate Hidden PDF Template for Download
+        const pdfContent = document.getElementById("pdfContent");
+        pdfContent.innerHTML = `
+            <div style="padding: 40px; border: 2px solid #000;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Emblem_of_Madhya_Pradesh.svg/1200px-Emblem_of_Madhya_Pradesh.svg.png" style="height: 80px;">
+                    <h1 style="font-size: 24px; font-weight: bold; margin-top: 10px;">मध्यप्रदेश शासन</h1>
+                    <h2 style="font-size: 18px;">AllInOne MP - आवेदन पावती</h2>
+                </div>
+                <hr style="border: 1px solid #eee; margin-bottom: 20px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; width: 40%;">आवेदक का नाम</td><td style="padding: 8px; border: 1px solid #ddd;">${item.applicantName || "-"}</td></tr>
+                    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">पिता/पति का नाम</td><td style="padding: 8px; border: 1px solid #ddd;">${item.fatherName || "-"}</td></tr>
+                    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">समग्र आईडी</td><td style="padding: 8px; border: 1px solid #ddd;">${item.samagraId || "-"}</td></tr>
+                    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">सेवा का प्रकार</td><td style="padding: 8px; border: 1px solid #ddd; text-transform: capitalize;">${item.serviceType || "-"}</td></tr>
+                    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">मोबाइल नंबर</td><td style="padding: 8px; border: 1px solid #ddd;">${item.mobile || "-"}</td></tr>
+                    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">पता</td><td style="padding: 8px; border: 1px solid #ddd;">${item.fullAddress || "-"}</td></tr>
+                    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">आवेदन दिनांक</td><td style="padding: 8px; border: 1px solid #ddd;">${item.timestamp ? new Date(item.timestamp).toLocaleDateString('hi-IN') : "-"}</td></tr>
+                    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">स्थिति</td><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">${item.status || "Pending"}</td></tr>
+                </table>
+                <div style="margin-top: 40px; text-align: right;">
+                    <p>डिजिटल हस्ताक्षरित</p>
+                    <p style="font-size: 12px; color: #777;">AllInOne MP पोर्टल</p>
+                </div>
             </div>
         `;
-    }
 
-    detailBody.innerHTML = html;
-
-    document.getElementById("detailModal").classList.remove("hidden");
-    document.getElementById("detailModal").classList.add("flex");
-};
+        document.getElementById("detailModal").classList.remove("hidden");
+        document.getElementById("detailModal").classList.add("flex");
+    };
 
     window.closeDetails = () => {
         document.getElementById("detailModal").classList.add("hidden");
@@ -370,23 +420,27 @@
         renderTable(filtered);
     });
 
-    initAuth();
     window.downloadPDF = function () {
-  const element = document.getElementById("pdfContent");
+        const element = document.getElementById("pdfContent");
+        // Temporarily show it for html2pdf to capture correctly
+        element.classList.remove("hidden");
 
-  const options = {
-    margin: 0.5,
-    filename: 'Application.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
-  };
+        const options = {
+            margin: [0.5, 0.5],
+            filename: 'Application_Acknowledgement.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
+        };
 
-  html2pdf().set(options).from(element).save();
-};
+        html2pdf().set(options).from(element).save().then(() => {
+            // Hide it back
+            element.classList.add("hidden");
+        });
+    };
 
+    initAuth();
 </script>
-    <!-- html2pdf library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 </body>
 </html>
