@@ -301,6 +301,16 @@
     e.preventDefault();
 
     await addDoc(collection(db, "applications"), {
+        await addDoc(collection(db, "applications"), {
+  applicantName: applicantName.value,
+  serviceType: serviceType.value,
+  samagraId: samagraId.value,
+  mobile: mobile.value,
+  status: "pending",
+
+  // ✅ YAHI DATE ADD KARO
+  createdAt: serverTimestamp()
+});
       serviceType: "Income Certificate",
       applicantName: form.applicantName.value,
       fatherName: form.fatherName.value,
