@@ -141,7 +141,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">मोबाइल नंबर *</label>
-                            <input type="tel" class="form-input" placeholder="10 अंकों का नंबर" required>
+<input type="tel" name="mobile" class="form-input" placeholder="10 अंकों का नंबर" required>
                         </div>
                     </div>
                 </section>
@@ -271,13 +271,17 @@
 <script type="module">
 
   // 1️⃣ Firebase imports
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp
+} from
+"https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
 
   // 2️⃣ Firebase config
   const firebaseConfig = {
@@ -298,19 +302,10 @@
 
   // 5️⃣ Form submit
   form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
+  try {
     await addDoc(collection(db, "applications"), {
-        await addDoc(collection(db, "applications"), {
-  applicantName: applicantName.value,
-  serviceType: serviceType.value,
-  samagraId: samagraId.value,
-  mobile: mobile.value,
-  status: "pending",
-
-  // ✅ YAHI DATE ADD KARO
-  createdAt: serverTimestamp()
-});
       serviceType: "Income Certificate",
       applicantName: form.applicantName.value,
       fatherName: form.fatherName.value,
@@ -321,11 +316,18 @@
       status: "pending",
       assignedTo: null,
       createdAt: serverTimestamp()
+      mobile: form.mobile.value,
     });
 
     alert("आवेदन सफलतापूर्वक जमा हो गया ✅");
     form.reset();
-  });
+
+  } catch (error) {
+    console.error(error);
+    alert("❌ आवेदन जमा नहीं हुआ, कृपया पुनः प्रयास करें");
+  }
+});
+
 
 </script>
     <footer class="bg-gray-900 text-gray-300">
