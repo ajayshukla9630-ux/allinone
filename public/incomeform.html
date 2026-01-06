@@ -260,8 +260,8 @@ import {
       annualIncome: form.annualIncome.value,
       status: "pending",
       assignedTo: null,
-      createdAt: serverTimestamp()
-      mobile: form.mobile.value,
+     createdAt: serverTimestamp(),
+mobile: form.mobile.value
     });
 
     alert("आवेदन सफलतापूर्वक जमा हो गया ✅");
@@ -272,7 +272,10 @@ import {
     alert("❌ आवेदन जमा नहीं हुआ, कृपया पुनः प्रयास करें");
   }
 });
-fetch("header.html")
+
+</script>
+    <script>
+  fetch("header.html")
     .then(res => res.text())
     .then(data => {
       document.getElementById("header").innerHTML = data;
@@ -283,7 +286,6 @@ fetch("header.html")
     .then(data => {
       document.getElementById("footer").innerHTML = data;
     });
-
 </script>
   
             <!-- Bottom Copyright Bar -->
