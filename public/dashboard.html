@@ -35,9 +35,9 @@ body { font-family: 'Noto Sans Devanagari', sans-serif; }
                 <p class="font-bold text-blue-800">8435273042</p>
             </div>
             <button onclick="handleLogout()"
-                class="bg-red-600 text-white px-4 py-1.5 md:px-6 md:py-2 rounded-full text-sm font-bold hover:bg-red-700 transition">
-                लॉगआउट
-            </button>
+  class="bg-red-600 text-white px-4 py-1.5 md:px-6 md:py-2 rounded-full text-sm font-bold hover:bg-red-700 transition">
+  लॉगआउट
+</button>
         </div>
     </div>
 </header>
@@ -211,16 +211,17 @@ window.downloadPDF = () => {
   }).save().then(()=>el.classList.add("hidden"));
 };
 
-window.logout = () => {
-  signOut(auth).then(()=>location.reload());
-};
-
-document.getElementById("searchInput").addEventListener("input", e=>{
-  const t = e.target.value.toLowerCase();
-  renderTable(allApplications.filter(a =>
-    (a.applicantName||"").toLowerCase().includes(t)
-  ));
-});
+window.handleLogout = function () {
+    signOut(auth)
+      .then(() => {
+        // logout ke baad kaha jana hai
+        window.location.href = "index.html"; // ya login.html
+      })
+      .catch((error) => {
+        alert("Logout me problem aayi");
+        console.error(error);
+      });
+  };
 </script>
 
 </body>
