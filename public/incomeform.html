@@ -140,6 +140,11 @@
                             </select>
                         </div>
                         <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">EMAIL*</label>
+                            <input type="email" class="form-input" placeholder="10 अंकों का नंबर" required>
+                        </div>
+                    </div>
+                        <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">मोबाइल नंबर *</label>
                             <input type="tel" class="form-input" placeholder="10 अंकों का नंबर" required>
                         </div>
@@ -269,7 +274,9 @@
         <p>© 2026 AllInOne MP | मध्यप्रदेश शासन का डिजिटल सेवा पोर्टल</p>
     </footer>
 <script type="module">
-
+function generateApplicationNumber() {
+  return "AIO-" + Date.now().toString().slice(-8);
+}
   // 1️⃣ Firebase imports
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
   import {
@@ -297,25 +304,80 @@
   const form = document.getElementById("incomeForm");
 
   // 5️⃣ Form submit
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+ form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    await addDoc(collection(db, "applications"), {
-      serviceType: "Income Certificate",
-      applicantName: form.applicantName.value,
-      fatherName: form.fatherName.value,
-      samagraId: form.samagraId.value,
-      aadhaar: form.aadhaar.value,
-      occupation: form.occupation.value,
-      annualIncome: form.annualIncome.value,
-      status: "pending",
-      assignedTo: null,
-      createdAt: serverTimestamp()
-    });
+  const applicationNo = generateApplicationNumber();
 
-    alert("आवेदन सफलतापूर्वक जमा हो गया ✅");
-    form.reset();
+  // 🔹 Firebase save
+  await addDoc(collection(db, "applications"), {
+    applicationNo: applicationNo,
+    serviceType: "Income Certificate",
+    applicantName: form.applicantName.value,
+    fatherName: form.fatherName.value,
+    samagraId: form.samagraId.value,
+    aadhaar: form.aadhaar.value,
+    occupation: form.occupation.value,
+    annualIncome: form.annualIncome.value,
+    email: form.email.value,
+    mobile: form.mobile.value,
+    fullAddress: form.fullAddress.value,
+    status: "pending",
+    createdAt: serverTimestamp()
   });
+
+  // 🔔 Popup
+  alert(
+    "आपका फॉर्म सफलतापूर्वक जमा हो गया ✅\n\n" +
+    "आवेदन क्रमांक: " + applicationNo + "\n\n" +
+    "आपका आवेदन AllInOne Web Portal पर भेज दिया गया है।\n" +
+    "हम आपसे जल्द संपर्क करेंगे।"
+  );
+
+  // 📄 PDF Receipt
+  generatePDF(applicationNo);
+
+  // 📧 Email
+  sendEmail(form.applicantName.value, form.email.value, applicationNo);
+
+  form.reset();
+});
+function generatePDF(applicationNo) {
+  const pdf = document.getElementById("pdfContent");
+
+  pdf.innerHTML = `
+    <div style="padding:30px;font-family:Noto Sans Devanagari;border:2px solid #000">
+      <h2 style="text-align:center">AllInOne MP – आवेदन रसीद</h2>
+      <p><b>आवेदन क्रमांक:</b> ${applicationNo}</p>
+      <p>आपका आवेदन AllInOne Web Portal पर सफलतापूर्वक जमा हो गया है।</p>
+      <p>हम आपसे शीघ्र संपर्क करेंगे।</p>
+      <br>
+      <p style="font-size:12px">यह रसीद कंप्यूटर जनित है।</p>
+    </div>
+  `;
+
+  pdf.classList.remove("hidden");
+
+  html2pdf().from(pdf).save(`Receipt_${applicationNo}.pdf`)
+    .then(() => pdf.classList.add("hidden"));
+}
+function sendEmail(name, email, applicationNo) {
+  emailjs.send(
+    "service_allinone",      // SERVICE ID
+    "template_application",  // TEMPLATE ID
+    {
+      to_name: name,
+      to_email: email,
+      application_no: applicationNo
+    }
+  ).then(() => {
+    console.log("Email sent");
+  }).catch(err => {
+    console.error("Email error", err);
+  });
+}
+
+
 
 </script>
     <footer class="bg-gray-900 text-gray-300">
@@ -374,6 +436,14 @@
             </div>
         </div>
     </footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<div id="pdfContent" class="hidden"></div>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  emailjs.init("-HjIyXVqfuRKrznVE");
+</script>
+
 
 </body>
 </html>
