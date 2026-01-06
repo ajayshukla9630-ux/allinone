@@ -8,6 +8,8 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
@@ -154,6 +156,7 @@ window.changeStatus = async (id, status) => {
 };
 
 window.openDetails = (id) => {
+    const applicationNumber = "AIO-" + item.id.substring(0, 8).toUpperCase();
   const item = allApplications.find(a => a.id === id);
   if (!item) return;
 
@@ -182,16 +185,54 @@ window.openDetails = (id) => {
   document.getElementById("detailBody").innerHTML = html;
 
   document.getElementById("pdfContent").innerHTML = `
-    <h2 style="text-align:center">AllInOne MP आवेदन विवरण</h2>
-    <table border="1" style="width:100%;border-collapse:collapse">
-      ${Object.keys(labels).map(k=>`
+  <div style="padding:30px;border:2px solid #000;font-family:Noto Sans Devanagari">
+
+    <div style="text-align:center">
+      <h2 style="margin-bottom:5px">AllInOne MP – आवेदन विवरण</h2>
+      <p style="font-weight:bold">आवेदन क्रमांक: ${applicationNumber}</p>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0">
+      <div>
+        <p><b>आवेदक:</b> ${item.applicantName || "-"}</p>
+        <p><b>सेवा:</b> ${item.serviceType || "-"}</p>
+        <p><b>मोबाइल:</b> ${item.mobile || "-"}</p>
+      </div>
+
+      <div id="qrBox"></div>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      ${Object.keys(labels).map(k => `
         <tr>
-          <td style="padding:8px;font-weight:bold">${labels[k]}</td>
-          <td style="padding:8px">${item[k]||"-"}</td>
+          <td style="border:1px solid #000;padding:8px;font-weight:bold;width:40%">
+            ${labels[k]}
+          </td>
+          <td style="border:1px solid #000;padding:8px">
+            ${item[k] || "-"}
+          </td>
         </tr>
       `).join("")}
     </table>
-  `;
+
+    <p style="margin-top:30px;font-size:12px;text-align:right">
+      यह दस्तावेज़ डिजिटल रूप से जनरेट किया गया है।
+    </p>
+  </div>
+`;
+    setTimeout(() => {
+  document.getElementById("qrBox").innerHTML = "";
+  new QRCode(document.getElementById("qrBox"), {
+    text: `
+Application No: ${applicationNumber}
+Name: ${item.applicantName}
+Service: ${item.serviceType}
+`,
+    width: 120,
+    height: 120
+  });
+}, 200);
+
 
   document.getElementById("detailModal").classList.remove("hidden");
   document.getElementById("detailModal").classList.add("flex");
