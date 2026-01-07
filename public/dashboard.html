@@ -172,14 +172,15 @@ function renderTable(data) {
         <td class="p-3">
   ${formatDate(item.createdAt)}
 </td>
-       <td class="p-3">
+      <td class="p-3">
   <select onchange="changeStatus('${item.id}', this.value)"
     class="border px-2 py-1">
-   <option value="pending">🟡 Pending</option>
-<option value="complete">🟢 Complete</option>
-<option value="reject">🔴 Reject</option>
+    <option value="pending" ${item.status === "pending" ? "selected" : ""}>🟡 Pending</option>
+    <option value="complete" ${item.status === "complete" ? "selected" : ""}>🟢 Complete</option>
+    <option value="reject" ${item.status === "reject" ? "selected" : ""}>🔴 Reject</option>
   </select>
 </td>
+
 
 <td class="p-3">
   <button
@@ -301,7 +302,7 @@ window.downloadPDF = () => {
   el.classList.remove("hidden");
 
   html2pdf().from(el).set({
-    filename: `Application-${applicationNumber}.pdf`,
+    filename: `Application.pdf`,
     margin: 0.5
   }).save().then(()=>el.classList.add("hidden"));
 };
