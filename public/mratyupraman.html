@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> मृत्यु प्रमाण पत्र आवेदन | AllINONE-MP </title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .form-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- ================= STANDARD HEADER ================= -->
+     <div id="header"></div>
+
+
+    
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow container mx-auto px-4 py-10">
+        
+        <div class="max-w-4xl mx-auto mb-8">
+            <nav class="text-sm text-gray-500 mb-2">
+                <a href="#" class="hover:text-blue-600">होम</a> / <span>सेवाएँ</span> / <span class="text-blue-900 font-semibold">जाति प्रमाण पत्र</span>
+            </nav>
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                <i class="fas fa-users text-blue-600"></i>
+                मृत्यु प्रमाण पत्र हेतु आवेदन
+            </h2>
+        </div>
+
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            
+            <div class="bg-blue-50 border-b border-blue-100 p-4 flex items-start gap-3">
+                <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                <p class="text-xs text-blue-800 leading-relaxed">
+                    <!--<strong>महत्वपूर्ण:</strong> डिजिटल जाति प्रमाण पत्र हेतु समग्र आईडी और आधार ई-केवाईसी अनिवार्य है। कृपया सुनिश्चित करें कि आपके आधार में मोबाइल नंबर लिंक है।
+                </p>-->
+            </div>
+
+            <form id="casteForm" class="p-6 md:p-10 space-y-10">
+
+                <!-- 1. व्यक्तिगत जानकारी -->
+                <section>
+                    <h3 class="text-lg font-bold text-blue-800 mb-6 border-b pb-2 flex items-center gap-2">
+                        <i class="fas fa-user-circle text-sm"></i> आवेदक की व्यक्तिगत जानकारी
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2"> मृतक का पूरा नाम (हिन्दी में) *</label>
+                            <input type="text" name="applicantName" class="form-input" placeholder="नाम दर्ज करें" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">पिता / पति का नाम (हिन्दी में) *</label>
+                            <input type="text" name="fatherName" class="form-input" placeholder="पिता का नाम दर्ज करें" required>
+                        </div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">लिंग (Gender) *</label>
+                        <div class="flex items-center gap-6">
+                        <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <input type="radio" name="gender" value="Male" class="form-radio" required>
+                         पुरुष (Male)  </label>
+                        <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <input type="radio" name="gender" value="Female" class="form-radio" required>
+                         महिला (Female)</label>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">मृत्यु की तिथि (अगर उपलब्ध हो) *</label>
+                            <input type="date" name="dob" class="form-input" required>
+                        </div>
+                        <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                        मृत्यु का समय (optional)
+                        </label>
+                        <input type="time" name="timeOfDeath" class="form-input">
+                        </div>
+                        <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                        मृत्यु का स्थान *
+                        </label>
+                        <select name="placeOfDeath" class="form-input"required>
+                        <option value="">मृत्यु का स्थान चुनें</option>
+                        <option value="Home">घर</option>
+                        <option value="Hospital">अस्पताल</option>
+                        <option value="Other">अन्य</option>
+                        </select>
+                        </div> 
+                        <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                        आयु (Age)
+                        </label>
+                        <input type="number"name="age"class="form-input"placeholder="आयु दर्ज करें"min="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">मोबाइल नंबर *</label>
+                            <input type="tel" name="mobile" class="form-input" placeholder="10 अंकों का नंबर" required>
+                        </div>
+                        <!-- मृत्यु से संबंधित विवरण -->
+<div>
+    <label class="block text-sm font-bold text-gray-700 mb-2">
+        मृत्यु का कारण *
+    </label>
+    <input
+        type="text"
+        name="causeOfDeath"
+        class="form-input"
+        placeholder="मृत्यु का कारण दर्ज करें"
+        required
+    >
+</div>
+
+<div>
+    <label class="block text-sm font-bold text-gray-700 mb-2">
+        क्या अस्पताल में मृत्यु हुई? *
+    </label>
+    <select
+        name="deathInHospital"
+        class="form-input"
+        required
+    >
+        <option value="">चुनें</option>
+        <option value="Yes">हाँ</option>
+        <option value="No">नहीं</option>
+    </select>
+</div>
+
+<div>
+    <label class="block text-sm font-bold text-gray-700 mb-2">
+        अस्पताल का नाम
+    </label>
+    <input
+        type="text"
+        name="hospitalName"
+        class="form-input"
+        placeholder="अस्पताल का नाम (यदि लागू हो)"
+    >
+</div>
+<!-- आवेदक की जानकारी -->
+<div>
+    <label class="block text-sm font-bold text-gray-700 mb-2">
+        आवेदक का नाम *
+    </label>
+    <input
+        type="text"
+        name="applicantName"
+        class="form-input"
+        placeholder="आवेदक का पूरा नाम"
+        required
+    >
+</div>
+
+<div>
+    <label class="block text-sm font-bold text-gray-700 mb-2">
+        मृतक से संबंध *
+    </label>
+    <select
+        name="relationWithDeceased"
+        class="form-input"
+        required
+    >
+        <option value="">संबंध चुनें</option>
+        <option value="Son">पुत्र</option>
+        <option value="Daughter">पुत्री</option>
+        <option value="Husband">पति</option>
+        <option value="Wife">पत्नी</option>
+        <option value="Father">पिता</option>
+        <option value="Mother">माता</option>
+        <option value="Other">अन्य</option>
+    </select>
+</div>
+
+<div>
+    <label class="block text-sm font-bold text-gray-700 mb-2">
+        मोबाइल नंबर *
+    </label>
+    <input
+        type="tel"
+        name="applicantMobile"
+        class="form-input"
+        placeholder="10 अंकों का मोबाइल नंबर"
+        required
+    >
+</div>
+
+
+                        
+
+                <section>
+                    <h3 class="text-lg font-bold text-blue-800 mb-6 border-b pb-2 flex items-center gap-2">
+                        <i class="fas fa-map-marked-alt text-sm"></i> वर्तमान पता
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">जिला *</label>
+                            <select name="district" class="form-input bg-white" required>
+                                <option>सीधी (Sidhi)</option>
+                                <option>रीवा (Rewa)</option>
+                                <option>भोपाल (Bhopal)</option>
+                                <option>इंदौर (Indore)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">तहसील *</label>
+                            <input type="text" name="tehsil" class="form-input" placeholder="तहसील दर्ज करें" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">ग्राम/वार्ड *</label>
+                            <input type="text" name="village" class="form-input" placeholder="ग्राम या वार्ड" required>
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">पूर्ण पता *</label>
+                            <textarea name="fullAddress" class="form-input h-20" placeholder="मकान नंबर, मोहल्ला, लैंडमार्क आदि..."></textarea>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 4. चेकलिस्ट दस्तावेज़ -->
+                <section class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <h3 class="text-lg font-bold text-blue-800 mb-4">आवश्यक दस्तावेज़ों की चेकलिस्ट</h3>
+                    <div class="space-y-3 text-sm text-gray-700">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                        
+<!-- आवश्यक दस्तावेज -->
+<div>
+    <label class="block text-sm font-bold text-gray-700 mb-2">
+        आवश्यक दस्तावेज (यदि उपलब्ध हों तो टिक करें)
+    </label>
+
+    <div class="space-y-2 text-sm text-gray-700">
+        <label class="flex items-center gap-2">
+            <input type="checkbox" name="documents[]" value="Deceased Aadhaar">
+            मृतक का आधार कार्ड
+        </label>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" name="documents[]" value="Applicant Aadhaar">
+            आवेदक का आधार कार्ड
+        </label>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" name="documents[]" value="Medical Certificate">
+            अस्पताल / डॉक्टर द्वारा जारी मृत्यु प्रमाण पत्र
+        </label>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" name="documents[]" value="Ration Card">
+            राशन कार्ड
+        </label>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" name="documents[]" value="Other">
+            अन्य दस्तावेज
+        </label>
+    </div>
+
+
+
+                      
+                    </div>
+                </section>
+
+                <!-- Submit Section -->
+                <div class="pt-6 border-t space-y-4">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" class="mt-1 h-4 w-4 text-blue-600 rounded" required>
+                        <span class="text-xs text-gray-600 italic">
+                            मैं घोषणा करता/करती हूँ कि मैं मध्य प्रदेश का मूल निवासी हूँ और मेरे द्वारा दी गई जानकारी सत्य है। असत्य पाए जाने पर मेरा आवेदन निरस्त किया जा सकता है।
+                        </span>
+                    </label>
+
+                    <div class="flex gap-4">
+                        <button type="submit" class="flex-1 bg-green-700 text-white py-3 rounded-xl font-bold text-lg hover:bg-green-800 shadow-xl shadow-green-100 transition active:scale-95">
+                            चरित्र प्रमाण पत्र आवेदन जमा करें
+                        </button>
+                        <button type="reset" class="px-8 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition">
+                            रीसेट
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer"></div>
+
+    <script type="module">
+        fetch("header.html")
+      .then(res => res.text())
+      .then(data => document.getElementById("header").innerHTML = data);
+
+    fetch("footer.html")
+      .then(res => res.text())
+      .then(data => document.getElementById("footer").innerHTML = data);
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        // Firebase Configuration (From User Template)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-iZvVroV-H6aRs7X-mlnt_ra3_vnaNzg",
+            authDomain: "allinone-aa89.firebaseapp.com",
+            projectId: "allinone-aa89",
+            storageBucket: "allinone-aa89.firebasestorage.app",
+            messagingSenderId: "924003122498",
+            appId: "1:924003122498:web:2c86505457236e60055cdb"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const form = document.getElementById("casteForm");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            try {
+                const formData = new FormData(form);
+                await addDoc(collection(db, "applications"), {
+                    serviceType: "Caste Certificate",
+                    applicantName: formData.get("applicantName"),
+                    fatherName: formData.get("fatherName"),
+                    samagraId: formData.get("samagraId"),
+                    aadhaar: formData.get("aadhaar"),
+                    category: formData.get("category"),
+                    subCaste: formData.get("subCaste"),
+                    mobile: formData.get("mobile"),
+                    status: "pending",
+                    createdAt: serverTimestamp()
+                });
+                alert("आवेदन सफलतापूर्वक जमा हो गया हम आपसे जल्द संपर्क करेंगे✅");
+                form.reset();
+            } catch (error) {
+                console.error("Error submitting form: ", error);
+                alert("कुछ त्रुटि हुई, कृपया पुनः प्रयास करें।");
+            }
+        });
+    </script>
+</body>
+</html>
