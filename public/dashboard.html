@@ -58,6 +58,7 @@ body { font-family: 'Noto Sans Devanagari', sans-serif; }
           <th class="p-3 text-left">समग्र ID</th>
           <th class="p-3 text-left">तारीख</th>
          <th class="p-3 text-left">स्थिति</th>
+        <th class="p-3 text-left">Delete</th>
         </tr>
       </thead>
       <tbody id="dataTable"></tbody>
@@ -100,6 +101,20 @@ body { font-family: 'Noto Sans Devanagari', sans-serif; }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+window.deleteApplication = async function (id) {
+  const confirmDelete = confirm("क्या आप यह आवेदन delete करना चाहते हैं?");
+  if (!confirmDelete) return;
+
+  try {
+    await deleteDoc(doc(db, "applications", id));
+    alert("आवेदन सफलतापूर्वक delete हो गया ✅");
+  } catch (err) {
+    console.error(err);
+    alert("Delete करने में समस्या आई ❌");
+  }
+};
 
 const firebaseConfig = {
   apiKey: "AIzaSyA-iZvVroV-H6aRs7X-mlnt_ra3_vnaNzg",
@@ -121,7 +136,12 @@ onAuthStateChanged(auth, user => {
 
 function loadData() {
   onSnapshot(collection(db, "applications"), snap => {
-    allApplications = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+allApplications = snap.docs
+  .map(d => ({ id: d.id, ...d.data() }))
+  .sort((a, b) => {
+    if (!a.createdAt || !b.createdAt) return 0;
+    return b.createdAt.seconds - a.createdAt.seconds;
+  });
     renderTable(allApplications);
   });
 }
@@ -152,15 +172,25 @@ function renderTable(data) {
         <td class="p-3">
   ${formatDate(item.createdAt)}
 </td>
-        <td class="p-3">
-          <select onchange="changeStatus('${item.id}', this.value)"
-            class="border px-2 py-1">
-            <option value="pending" ${item.status==="pending"?"selected":""}>Pending</option>
-            <option value="complete" ${item.status==="complete"?"selected":""}>Complete</option>
-            <option value="reject" ${item.status==="reject"?"selected":""}>Reject</option>
-          </select>
-        </td>
-      </tr>
+       <td class="p-3">
+  <select onchange="changeStatus('${item.id}', this.value)"
+    class="border px-2 py-1">
+   <option value="pending">🟡 Pending</option>
+<option value="complete">🟢 Complete</option>
+<option value="reject">🔴 Reject</option>
+  </select>
+</td>
+
+<td class="p-3">
+  <button
+    onclick="deleteApplication('${item.id}')"
+    class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700">
+    🗑 Delete
+  </button>
+</td>
+
+</tr>
+
     `;
   });
 }
@@ -271,7 +301,7 @@ window.downloadPDF = () => {
   el.classList.remove("hidden");
 
   html2pdf().from(el).set({
-    filename: "Application.pdf",
+    filename: `Application-${applicationNumber}.pdf`,
     margin: 0.5
   }).save().then(()=>el.classList.add("hidden"));
 };
@@ -298,11 +328,12 @@ window.handleLogout = function () {
 
     renderTable(filteredData);
   });
-    async function changeStatus(id, value) {
-await updateDoc(doc(db, "applications", id), {
-status: value
-});
-}
+    window.changeStatus = async function (id, value) {
+  await updateDoc(doc(db, "applications", id), {
+    status: value
+  });
+};
+
 </script>
 
 </body>
