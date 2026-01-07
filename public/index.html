@@ -308,12 +308,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-400 py-12 px-4">
-        <div class="container mx-auto text-center">
-            <p>© 2026 AllINONE | MP Govt Services Portal</p>
-            <p class="text-xs mt-2">Managed by IT Department, Madhya Pradesh</p>
-        </div>
-    </footer>
+    <div id="footer"></div>
 
     <script>
         // Filtering Functionality
@@ -353,8 +348,16 @@
             });
         });
     </script>
+    <script>
+        fetch("footer.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("footer").innerHTML = data;
+    });
+</script>
 </body>
 </html>
+
 
 
 
