@@ -165,11 +165,14 @@
         </div>
     </main>
         <div id="footer"></div>
+   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <script>
   (function(){
-    emailjs.init("-HjIyXVqfuRKrznVE"); // ← यहाँ अपनी Public Key डालो
+    emailjs.init("-HjIyXVqfuRKrznVE");
   })();
 </script>
+
     <!-- Firebase Script Logic -->
     <script type="module">     
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
@@ -189,44 +192,44 @@
         const db = getFirestore(app);
         const form = document.getElementById("samagraKycForm");
 
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            try {
-                const formData = new FormData(form);
-               await addDoc(collection(db, "samagra_ekyc_requests"), {
-  serviceType: "Samagra e-KYC Request",
-  memberId: formData.get("memberId"),
-  familyId: formData.get("familyId"),
-  aadhaarLast4: formData.get("aadhaarNumber").slice(-4),
-  authMethod: formData.get("authMethod"),
-  applicantName: formData.get("applicantName"),
-  mobile: formData.get("mobile"),
-  email: formData.get("email"),
-  dob: formData.get("dob"),
-  gender: formData.get("gender"),
-  status: "pending",
-  createdAt: serverTimestamp()
-});
+      form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-                const applicationNumber =
+  try {
+    const formData = new FormData(form);
+
+    const docRef = await addDoc(collection(db, "samagra_ekyc_requests"), {
+      serviceType: "Samagra e-KYC Request",
+      memberId: formData.get("memberId"),
+      familyId: formData.get("familyId"),
+      aadhaarLast4: formData.get("aadhaarNumber").slice(-4),
+      authMethod: formData.get("authMethod"),
+      applicantName: formData.get("applicantName"),
+      mobile: formData.get("mobile"),
+      email: formData.get("email"),
+      dob: formData.get("dob"),
+      gender: formData.get("gender"),
+      status: "pending",
+      createdAt: serverTimestamp()
+    });
+
+    const applicationNumber =
       "AIO-" + docRef.id.substring(0, 8).toUpperCase();
 
-    // 3️⃣ अब EMAIL भेजो (यही सही जगह है ✅)
     await emailjs.send(
-      "service_allinone",      // 👈 EmailJS Service ID
-      "template_7x246oi",     // 👈 Template ID
+      "service_allinone",
+      "template_7x246oi",
       {
-        to_email: form.email.value,
-        to_name: form.applicantName.value,
+        to_email: formData.get("email"),
+        to_name: formData.get("applicantName"),
         application_no: applicationNumber
       }
     );
 
-    // 4️⃣ User को message दिखाओ
     alert(
-      "✅ आवेदन सफलतापूर्वक जमा हो गया हम आपसे जल्द संपर्क करेंगे\n\n" +
+      "✅ आवेदन सफलतापूर्वक जमा हो गया\n\n" +
       "Application ID: " + applicationNumber +
-      "\n\nईमेल आपके पते पर भेज दिया गया है।"
+      "\n\nईमेल भेज दिया गया है।"
     );
 
     form.reset();
@@ -236,6 +239,7 @@
     alert("❌ आवेदन या ईमेल भेजने में समस्या आई");
   }
 });
+
     </script>
   <script>
   fetch("header.html")
@@ -254,3 +258,4 @@
 </body>
 
 </html>
+
