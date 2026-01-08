@@ -25,48 +25,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // submit handler
   form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
+  try {
+    const serviceType = getActiveService();
+
+    const data = {};
+    form.querySelectorAll("[name]").forEach(el => {
+      data[el.name] = el.value.trim();
+    });
+
+    // 🔹 FIREBASE SAVE (main)
+    const docRef = await addDoc(collection(db, "mpbhojApplications"), {
+      serviceType,
+      ...data,
+      status: "pending",
+      createdAt: serverTimestamp()
+    });
+
+    const applicationNumber =
+      "MPBHOJ-" + docRef.id.substring(0, 8).toUpperCase();
+
+    // 🔹 EMAIL (optional)
     try {
-      const serviceType = getActiveService();
-
-      const data = {};
-      form.querySelectorAll("[name]").forEach(el => {
-        data[el.name] = el.value;
-      });
-
-      const docRef = await addDoc(collection(db, "mpbhojApplications"), {
-        serviceType,
-        ...data,
-        status: "pending",
-        createdAt: serverTimestamp()
-      });
-
-      const applicationNumber = "MPBHOJ-" + docRef.id.substring(0, 8).toUpperCase();
-
-      await emailjs.send(
-        "service_allinone",
-        "template_7x246oi",
-        {
-          to_email: data.email,
-          to_name: data.studentName || "Student",
-          application_no: applicationNumber
-        }
-      );
-
-      document.getElementById("alertBox").style.display = "block";
-      form.reset();
-
-      setTimeout(() => {
-        document.getElementById("alertBox").style.display = "none";
-      }, 3000);
-
-    } catch (err) {
-      console.error(err);
-      alert("❌ कुछ त्रुटि हुई");
+      if (data.email) {
+        await emailjs.send(
+          "service_allinone",
+          "template_7x246oi",
+          {
+            to_email: data.email,
+            to_name: data.studentName || "Student",
+            application_no: applicationNumber
+          }
+        );
+      }
+    } catch (emailErr) {
+      console.warn("Email failed, but data saved ✅", emailErr);
     }
-  });
+
+    document.getElementById("alertBox").style.display = "block";
+    form.reset();
+
+    setTimeout(() => {
+      document.getElementById("alertBox").style.display = "none";
+    }, 3000);
+
+  } catch (err) {
+    console.error("Firebase Error ❌", err);
+    alert("डेटा सेव नहीं हो पाया");
+  }
 });
+
 
 // ================= TAB LOGIC =================
 window.openTab = function (i) {
