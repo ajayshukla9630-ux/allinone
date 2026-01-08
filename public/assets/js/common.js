@@ -36,14 +36,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // ================= HEADER / FOOTER =================
   document.addEventListener("DOMContentLoaded", () => {
 
-  fetch("./header.html")
+  fetch("header.html")
     .then(res => res.text())
     .then(html => {
       const h = document.getElementById("header");
       if (h) h.innerHTML = html;
     });
 
-  fetch("./footer.html")
+  fetch("footer.html")
     .then(res => res.text())
     .then(html => {
       const f = document.getElementById("footer");
