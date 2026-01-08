@@ -26,7 +26,6 @@
     </style>
 </head>
 <body class="bg-gray-50 flex flex-col min-h-screen">
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
     <!-- ================= STANDARD HEADER START ================= -->
   <div id="header"></div>
@@ -55,7 +54,7 @@
                 </p>
             </div>
 
-<form id="incomeForm" method="post" class="p-6 md:p-10 space-y-10">
+<form id="incomeForm"class="p-6 md:p-10 space-y-10">
 
                 <!-- 1. व्यक्तिगत जानकारी -->
                <!-- 1. व्यक्तिगत जानकारी -->
@@ -305,7 +304,12 @@
 
     <!-- Simple Footer -->
     <div id="footer"></div>
-     <script src="assets/js/common.js?v=1.0"></script>
-    <script type="module" src="assets/js/forms.js?v=1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  emailjs.init("-HjIyXVqfuRKrznVE");
+</script>
+
+    <script src="assets/js/common.js?v=1.0" defer></script>
+<script type="module" src="assets/js/forms.js?v=1.0"></script>
 </body>
 </html>
