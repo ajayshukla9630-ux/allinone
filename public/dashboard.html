@@ -145,6 +145,16 @@ onSnapshot(collection(db, "samagra_ekyc_requests"), snap => {
   allApplications = [...allApplications, ...ekyc];
   renderTable(allApplications);
 });
+onSnapshot(collection(db, "mpbhojApplications"), snap => {
+  const mpbhoj = snap.docs.map(d => ({
+    id: d.id,
+    _collection: "mpbhojApplications",
+    ...d.data()
+  }));
+
+  allApplications = [...allApplications, ...mpbhoj];
+  renderTable(allApplications);
+});
 
 function formatDate(timestamp) {
   if (!timestamp) return "-";
@@ -173,9 +183,9 @@ function renderTable(data) {
     table.innerHTML += `
       <tr class="border-b hover:bg-gray-50">
         <td class="p-3 text-blue-700 font-bold cursor-pointer underline"
-            onclick="openDetails('${item.id}')">
-          ${item.applicantName || "-"}
-        </td>
+    onclick="openDetails('${item.id}')">
+  ${item.studentName || item.applicantName || "-"}
+</td>
         <td class="p-3">${item.serviceType || "-"}</td>
 <td>${item.memberId || "-"}</td>
 <td class="p-3">
@@ -255,7 +265,7 @@ window.openDetails = (id) => {
     </div>
 
     <!-- BASIC INFO -->
-    <p><b>नाम:</b> ${item.applicantName || "-"}</p>
+<p><b>नाम:</b> ${item.studentName || item.applicantName || "-"}</p>
     <p><b>सेवा:</b> ${item.serviceType || "-"}</p>
     <p><b>मोबाइल:</b> ${item.mobile || "-"}</p>
     <p><b>आवेदन तिथि:</b> ${formatDate(item.createdAt)}</p>
