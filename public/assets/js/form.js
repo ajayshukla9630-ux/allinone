@@ -15,21 +15,16 @@ const firebaseConfig = {
   messagingSenderId: "924003122498",
   appId: "1:924003122498:web:2c86505457236e60055cdb"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-// ================= DOM READY =================
-document.addEventListener("DOMContentLoaded", () => {
-
   // ================= INCOME FORM =================
+document.addEventListener("DOMContentLoaded", () => {
   const incomeForm = document.getElementById("incomeForm");
-  if (!incomeForm) return; // agar ye page income form ka nahi hai
-incomeForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+  if (!incomeForm) return;
 
-  console.log("submit handler working");
-
+  incomeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    console.log("submit handler working");
     try {
       const docRef = await addDoc(collection(db, "applications"), {
         applicantName: incomeForm.applicantName.value,
@@ -57,7 +52,7 @@ incomeForm.addEventListener("submit", async (e) => {
       const applicationNumber =
         "AIO-" + docRef.id.substring(0, 8).toUpperCase();
 
-      await emailjs.send(
+      await window.emailjs.send(
         "service_allinone",
         "template_7x246oi",
         {
