@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>दिव्यांग प्रमाण पत्र आवेदन | AllINONE-MP </title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
+        body {
+            font-family: "Arial", sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .form-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- ================= STANDARD HEADER ================= -->
+     <div id="header"></div>
+
+
+    
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow container mx-auto px-4 py-10">
+        
+        <div class="max-w-4xl mx-auto mb-8">
+            <nav class="text-sm text-gray-500 mb-2">
+                <a href="#" class="hover:text-blue-600">होम</a> / <span>सेवाएँ</span> / <span class="text-blue-900 font-semibold">दिव्यांग प्रमाण पत्र </span>
+            </nav>
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                <i class="fas fa-users text-blue-600"></i>
+           दिव्यांग प्रमाण पत्र हेतु आवेदन
+            </h2>
+        </div>
+
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            
+            <div class="bg-blue-50 border-b border-blue-100 p-4 flex items-start gap-3">
+                <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                <p class="text-xs text-blue-800 leading-relaxed">
+                <strong>महत्वपूर्ण:</strong> विकलांगता प्रमाण पत्र केवल सरकारी मेडिकल बोर्ड द्वारा जारी प्रमाण पत्र के आधार पर ही बनाया जाता है। विकलांगता का प्रतिशत 40% या उससे अधिक होना अनिवार्य है।
+                </p>
+            </div>
+
+            <form id="casteForm" class="p-6 md:p-10 space-y-10">
+
+
+<!-- ===== व्यक्तिगत जानकारी ===== -->
+
+<div>
+    <label>दिव्यांग व्यक्ति का पूरा नाम *</label>
+    <input 
+        type="text" 
+        name="personName"
+        class="form-input"
+        placeholder="दिव्यांग व्यक्ति का पूरा नाम लिखें"
+        required
+    >
+</div>
+
+<div>
+    <label>पिता / पति का नाम *</label>
+    <input 
+        type="text" 
+        name="fatherHusbandName"
+        class="form-input"
+        placeholder="पिता या पति का पूरा नाम"
+        required
+    >
+</div>
+
+<div>
+    <label>जन्म तिथि (DOB) *</label>
+    <input 
+        type="date" 
+        name="dob"
+        class="form-input"
+        required
+    >
+</div>
+
+<div>
+    <label>आयु (Age)</label>
+    <input 
+        type="number" 
+        name="age"
+        class="form-input"
+        placeholder="आयु (वर्षों में)"
+        min="0"
+    >
+</div>
+
+<div>
+    <label>लिंग (Gender) *</label>
+    <select 
+        name="gender"
+        class="form-input"
+        required
+    >
+        <option value="">Select</option>
+        <option value="Male">पुरुष</option>
+        <option value="Female">महिला</option>
+        <option value="Other">अन्य</option>
+    </select>
+</div>
+
+<div>
+    <label>मोबाइल नंबर *</label>
+    <input 
+        type="tel"
+        name="mobile"
+        class="form-input"
+        placeholder="10 अंकों का मोबाइल नंबर"
+        required
+    >
+</div>
+
+<div>
+    <label>ई-मेल आईडी</label>
+    <input 
+        type="email"
+        name="email"
+        class="form-input"
+        placeholder="example@gmail.com"
+    >
+</div>
+   
+
+    <!-- Checkbox -->
+<div>
+    <label style="display:flex; align-items:center; gap:8px; font-weight:normal; margin-bottom:8px;">
+        <input type="checkbox" required>
+        विकलांगता का प्रकार चुनें
+    </label>
+
+    <!-- Dropdown -->
+    <select class="form-input" name="disabilityType" required>
+        <option value="">Select</option>
+        <option value="Physical">शारीरिक विकलांगता (Physical)</option>
+        <option value="Visual">दृष्टि बाधित (Visual)</option>
+        <option value="Hearing">श्रवण बाधित (Hearing)</option>
+        <option value="Speech">मूक-बधिर (Speech & Hearing)</option>
+        <option value="Mental">मानसिक विकलांगता</option>
+        <option value="Multiple">बहुविकलांगता (Multiple)</option>
+        <option value="Other">अन्य</option>
+    </select>
+</div>
+
+<div>
+<!-- Checkbox -->
+    <label style="display:flex; align-items:center; gap:8px; font-weight:normal; margin-bottom:8px;">
+        <input type="checkbox" required>
+        विकलांगता प्रतिशत लागू है
+    </label>
+
+    <!-- Dropdown -->
+    <select class="form-input" name="disabilityPercent" required>
+        <option value="">Select</option>
+        <option value="Below40">40% से कम</option>
+        <option value="40-60">40% – 60%</option>
+        <option value="60-80">60% – 80%</option>
+        <option value="Above80">80% से अधिक</option>
+    </select>
+</div>
+
+<!-- 2. पते की जानकारी -->
+<section>
+  <h3 class="text-lg font-bold text-blue-800 mb-6 border-b pb-2 flex items-center gap-2">
+    <i class="fas fa-map-marker-alt text-sm"></i> पते का विवरण
+  </h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div>
+  <label class="block text-sm font-bold text-gray-700 mb-2">
+    पिन कोड *
+  </label>
+  <input type="text"
+         id="pincode"
+         name="pincode"
+         maxlength="6"
+         pattern="[0-9]{6}"
+         class="form-input"
+         placeholder="462001"
+         required>
+</div>
+      <div>
+  <label class="block text-sm font-bold text-gray-700 mb-2">
+    राज्य
+  </label>
+  <input type="text"
+         id="state"
+         name="state"
+         class="form-input bg-gray-100"
+         readonly>
+</div>
+
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-2">
+        जिला *
+      </label>
+<input type="text"
+         id="district"name="district"class="form-input bg-gray-100"readonly>      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-2">
+        तहसील *
+      </label>
+      <input type="text" name="tehsil"
+             class="form-input" required>
+    </div>
+
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-2">
+        ग्राम / वार्ड *
+      </label>
+      <input type="text" name="village"
+             class="form-input" required>
+    </div>
+
+    <div class="md:col-span-3">
+      <label class="block text-sm font-bold text-gray-700 mb-2">
+        पूरा पता *
+      </label>
+      <textarea name="fullAddress"
+                class="form-input h-20"
+                required></textarea>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+<!-- ===== आवश्यक दस्तावेज ===== -->
+
+<div>
+    <label style="font-weight:600; margin-bottom:10px; display:block;">
+        आवश्यक दस्तावेज (यदि उपलब्ध हों तो टिक करें)
+    </label>
+
+    <div style="font-size:14px; color:#374151;">
+
+        <div>
+            <label style="display:flex; align-items:center; gap:8px; font-weight:normal;">
+                <input type="checkbox" name="documents[]" value="Aadhaar">
+                आधार कार्ड
+            </label>
+        </div>
+
+        <div>
+            <label style="display:flex; align-items:center; gap:8px; font-weight:normal;">
+                <input type="checkbox" name="documents[]" value="DisabilityCertificate">
+                मेडिकल बोर्ड द्वारा जारी विकलांगता प्रमाण पत्र
+            </label>
+        </div>
+
+        <div>
+            <label style="display:flex; align-items:center; gap:8px; font-weight:normal;">
+                <input type="checkbox" name="documents[]" value="MedicalReport">
+                अस्पताल / डॉक्टर की मेडिकल रिपोर्ट
+            </label>
+        </div>
+
+        <div>
+            <label style="display:flex; align-items:center; gap:8px; font-weight:normal;">
+                <input type="checkbox" name="documents[]" value="Photo">
+                पासपोर्ट साइज फोटो
+            </label>
+        </div>
+
+        <div>
+            <label style="display:flex; align-items:center; gap:8px; font-weight:normal;">
+                <input type="checkbox" name="documents[]" value="BPL">
+                बीपीएल कार्ड (यदि लागू हो)
+            </label>
+        </div>
+
+        <div>
+            <label style="display:flex; align-items:center; gap:8px; font-weight:normal;">
+                <input type="checkbox" name="documents[]" value="Other">
+                अन्य दस्तावेज
+            </label>
+        </div>
+
+    </div>
+</div>
+
+                <!-- Submit Section -->
+                <div class="pt-6 border-t space-y-4">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" class="mt-1 h-4 w-4 text-blue-600 rounded" required>
+                        <span class="text-xs text-gray-600 italic">
+                            मैं घोषणा करता/करती हूँ कि मैं मध्य प्रदेश का मूल निवासी हूँ और मेरे द्वारा दी गई जानकारी सत्य है। असत्य पाए जाने पर मेरा आवेदन निरस्त किया जा सकता है।
+                        </span>
+                    </label>
+
+                    <div class="flex gap-4">
+                        <button type="submit" class="flex-1 bg-green-700 text-white py-3 rounded-xl font-bold text-lg hover:bg-green-800 shadow-xl shadow-green-100 transition active:scale-95">
+                         आवेदन जमा करें
+                        </button>
+                        <button type="reset" class="px-8 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition">
+                            रीसेट
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+    </script>
+</body>
+</html>
