@@ -1,50 +1,74 @@
-document.addEventListener("DOMContentLoaded", () => {
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  // ========== COMMON: PINCODE AUTO FILL ==========
-  const pinInput = document.getElementById("pincode");
-  if (pinInput) {
-    pinInput.addEventListener("blur", () => {
-      const pin = pinInput.value.trim();
-      if (pin.length === 6) fetchPincode(pin);
-    });
-  }
+// ================= FIREBASE INIT =================
+const firebaseConfig = {
+  apiKey: "AIzaSyA-iZvVroV-H6aRs7X-mlnt_ra3_vnaNzg",
+  authDomain: "allinone-aa89.firebaseapp.com",
+  projectId: "allinone-aa89",
+  storageBucket: "allinone-aa89.firebasestorage.app",
+  messagingSenderId: "924003122498",
+  appId: "1:924003122498:web:2c86505457236e60055cdb"
+};
 
-  function fetchPincode(pin) {
-    const API_KEY = "YOUR_API_KEY";
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    fetch(`https://api.data.gov.in/resource/5c2f62fe-5afa-4119-a499-fec9d604d5bd?api-key=${API_KEY}&format=json&filters[pincode]=${pin}&limit=1`)
-      .then(res => res.json())
-      .then(data => {
-        if (!data.records?.length) return;
-        const d = data.records[0];
+// ================= INCOME FORM =================
+const incomeForm = document.getElementById("incomeForm");
 
-        const state = document.getElementById("state");
-        const district = document.getElementById("district");
+if (incomeForm) {
+  incomeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        if (state) state.value = d.statename;
-        if (district) district.value = d.district;
+    try {
+      const docRef = await addDoc(collection(db, "applications"), {
+        applicantName: incomeForm.applicantName.value,
+        fatherName: incomeForm.fatherName.value,
+        samagraId: incomeForm.samagraId.value,
+        aadhaar: incomeForm.aadhaar.value,
+        email: incomeForm.email.value,
+        mobile: incomeForm.mobile.value,
+
+        gender: incomeForm.gender.value,
+        district: incomeForm.district.value,
+        pincode: incomeForm.pincode.value,
+        state: incomeForm.state.value,
+        tehsil: incomeForm.tehsil.value,
+        village: incomeForm.village.value,
+        fullAddress: incomeForm.fullAddress.value,
+        occupation: incomeForm.occupation.value,
+
+        annualIncome: incomeForm.annualIncome.value,
+        serviceType: "Income Certificate",
+        status: "pending",
+        createdAt: serverTimestamp()
       });
-  }
 
-  // ========== COMMON: ACCESSIBILITY MESSAGE ==========
-  const srStatus = document.getElementById("sr-status");
-  if (srStatus) {
-    srStatus.innerText = "फॉर्म लोड हो गया है";
-  }
-  
-  fetch("header.html")
-    .then(res => res.text())
-    .then(data => {
-      document.getElementById("header").innerHTML = data;
-    });
+      const applicationNumber =
+        "AIO-" + docRef.id.substring(0, 8).toUpperCase();
 
-  fetch("footer.html")
-    .then(res => res.text())
-    .then(data => {
-      document.getElementById("footer").innerHTML = data;
-    });
+      await emailjs.send(
+        "service_allinone",
+        "template_7x246oi",
+        {
+          to_email: incomeForm.email.value,
+          to_name: incomeForm.applicantName.value,
+          application_no: applicationNumber
+        }
+      );
 
+      alert("✅ आवेदन सफलतापूर्वक जमा हो गया\nApplication ID: " + applicationNumber);
+      incomeForm.reset();
 
-});
-
-
+    } catch (err) {
+      console.error(err);
+      alert("❌ आवेदन में समस्या आई");
+    }
+  });
+}
