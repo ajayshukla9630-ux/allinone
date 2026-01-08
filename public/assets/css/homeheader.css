@@ -1,1 +1,61 @@
 
+        /* MP Govt Portal Custom Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        /* Hero Section Gradient */
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+
+        /* Service Card Hover Effects */
+        .service-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-left-color: #3b82f6;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+.ticker-wrapper {
+  overflow: hidden;
+  background: #fffbeb;
+  border-bottom: 1px solid #fef3c7;
+}
+
+.ticker-text {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: ticker linear infinite;
+  animation-duration: 40s; /* base speed */
+}
+
+/* Responsive speed control */
+@media (max-width: 768px) {
+  .ticker-text {
+    animation-duration: 25s;
+  }
+}
+
+@media (min-width: 1200px) {
+  .ticker-text {
+    animation-duration: 50s;
+  }
+}
+
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+<
