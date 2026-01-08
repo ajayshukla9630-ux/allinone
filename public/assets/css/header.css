@@ -25,21 +25,39 @@
 
 /* ===== TICKER ===== */
 .ticker-wrapper {
-  background: #fff5f5;
   overflow: hidden;
+  background: #fffbeb;
+  border-bottom: 1px solid #fef3c7;
 }
 
 .ticker-text {
-  white-space: nowrap;
   display: inline-block;
-  animation: tickerMove 25s linear infinite;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: ticker linear infinite;
+  animation-duration: 40s; /* base speed */
 }
 
-@keyframes tickerMove {
+/* Responsive speed control */
+@media (max-width: 768px) {
+  .ticker-text {
+    animation-duration: 25s;
+  }
+}
+
+@media (min-width: 1200px) {
+  .ticker-text {
+    animation-duration: 50s;
+  }
+}
+
+@keyframes ticker {
   0% {
-    transform: translateX(100%);
+    transform: translateX(0);
   }
   100% {
     transform: translateX(-100%);
   }
 }
+
+
