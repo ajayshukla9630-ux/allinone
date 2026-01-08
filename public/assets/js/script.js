@@ -1,50 +1,52 @@
- <script>
-        // Filtering Functionality
-        function filterServices(category) {
-            const cards = document.querySelectorAll('.service-card');
-            const tabs = document.querySelectorAll('.category-tab');
-            
-            // Toggle Active Class
-            tabs.forEach(tab => tab.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+// ================= HOME PAGE JS =================
 
-            // Show/Hide Cards
-            cards.forEach(card => {
-                if (category === 'all' || card.getAttribute('data-category') === category) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
+// CATEGORY FILTER
+function filterServices(category, btn) {
+  const cards = document.querySelectorAll('.service-card');
+  const tabs = document.querySelectorAll('.category-tab');
 
-        // Search Functionality
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', function(e) {
-            const term = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.service-card');
+  tabs.forEach(tab => tab.classList.remove('active'));
+  btn.classList.add('active');
 
-            cards.forEach(card => {
-                const title = card.querySelector('h4').textContent.toLowerCase();
-                const desc = card.querySelector('p').textContent.toLowerCase();
-                
-                if (title.includes(term) || desc.includes(term)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    </script>
-    <script>
-          fetch("header.html")
+  cards.forEach(card => {
+    card.style.display =
+      category === 'all' || card.dataset.category === category
+        ? 'block'
+        : 'none';
+  });
+}
+
+// DOM READY
+document.addEventListener("DOMContentLoaded", () => {
+
+  // SEARCH
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', e => {
+      const term = e.target.value.toLowerCase();
+      document.querySelectorAll('.service-card').forEach(card => {
+        card.style.display =
+          card.innerText.toLowerCase().includes(term)
+            ? 'block'
+            : 'none';
+      });
+    });
+  }
+
+  // HEADER
+  fetch("header.html")
     .then(res => res.text())
     .then(data => {
-      document.getElementById("header").innerHTML = data;
+      const h = document.getElementById("header");
+      if (h) h.innerHTML = data;
     });
-        fetch("footer.html")
+
+  // FOOTER
+  fetch("footer.html")
     .then(res => res.text())
     .then(data => {
-      document.getElementById("footer").innerHTML = data;
+      const f = document.getElementById("footer");
+      if (f) f.innerHTML = data;
     });
-</script>
+
+});
