@@ -1,4 +1,9 @@
- // ================= HEADER LOAD =================
+document.addEventListener("DOMContentLoaded", () => {
+
+    // Initial render
+    applyFilters();
+
+    // ================= HEADER LOAD =================
     fetch("header.html")
         .then(res => res.text())
         .then(html => {
