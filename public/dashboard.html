@@ -36,10 +36,11 @@ body { font-family: 'Noto Sans Devanagari', sans-serif; }
                 <p class="text-xs text-gray-500 uppercase">सहायता केंद्र</p>
                 <p class="font-bold text-blue-800">8435273042</p>
             </div>
-            <button onclick="handleLogout()"
+           <button onclick="logout()"
   class="bg-red-600 text-white px-4 py-1.5 md:px-6 md:py-2 rounded-full text-sm font-bold hover:bg-red-700 transition">
   लॉगआउट
 </button>
+
         </div>
     </div>
 </header>
@@ -96,349 +97,136 @@ body { font-family: 'Noto Sans Devanagari', sans-serif; }
     </div>
 </footer>
 <script type="module">
-<!-- FIREBASE -->
-/* ================= IMPORTS ================= */
+/* ===== IMPORTS ===== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  onSnapshot,
-  doc,
-  updateDoc,
-  deleteDoc
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc } 
+  from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } 
+  from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-/* ================= FIREBASE CONFIG ================= */
+/* ===== CONFIG ===== */
 const firebaseConfig = {
   apiKey: "AIzaSyA-iZvVroV-H6aRs7X-mlnt_ra3_vnaNzg",
   authDomain: "allinone-aa89.firebaseapp.com",
   projectId: "allinone-aa89"
 };
 
-/* ================= INITIALIZE ================= */
+/* ===== INIT ===== */
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* ================= 🔐 AUTH GUARD ================= */
-onAuthStateChanged(auth, (user) => {
+/* ===== AUTH GUARD ===== */
+onAuthStateChanged(auth, user => {
   if (!user) {
-    // ❌ direct access block
     window.location.href = "login.html";
-    return;
+  } else {
+    loadData();
   }
-
-  // ✅ logged in → dashboard load
-  loadDashboard();
 });
 
-/* ================= GLOBAL DATA ================= */
+/* ===== DATA ===== */
 let allApplications = [];
 
-/* ================= DASHBOARD LOAD ================= */
-function loadDashboard() {
+/* ===== LOAD DATA ===== */
+function loadData() {
+  listen("applications");
+  listen("samagra_ekyc_requests");
+  listen("mpbhojApplications");
+}
 
-  onSnapshot(collection(db, "applications"), snap => {
+function listen(col) {
+  onSnapshot(collection(db, col), snap => {
+    allApplications = allApplications.filter(i => i._collection !== col);
     const data = snap.docs.map(d => ({
       id: d.id,
-      _collection: "applications",
+      _collection: col,
       ...d.data()
     }));
-    allApplications = data;
-    renderTable(allApplications);
+    allApplications = [...allApplications, ...data];
+    render(allApplications);
   });
 }
 
-/* ================= DELETE ================= */
-window.deleteApplication = async function (id) {
-  const item = allApplications.find(a => a.id === id);
-  if (!item) return;
-
-  if (!confirm("क्या आप यह आवेदन delete करना चाहते हैं?")) return;
-
-  await deleteDoc(doc(db, item._collection, id));
-  alert("आवेदन delete हो गया ✅");
-};
-
-/* ================= STATUS CHANGE ================= */
-window.changeStatus = async function (id, value) {
-  const item = allApplications.find(a => a.id === id);
-  if (!item) return;
-
-  await updateDoc(
-    doc(db, item._collection, id),
-    { status: value }
-  );
-};
-
-/* ================= LOGOUT ================= */
-window.handleLogout = function () {
-  signOut(auth).then(() => {
-    window.location.href = "login.html";
-  });
-};
-let allApplications = [];
-
-onSnapshot(collection(db, "applications"), snap => {
-  const apps = snap.docs.map(d => ({
-    id: d.id,
-    _collection: "applications",
-    ...d.data()
-  }));
-  allApplications = [...apps];
-  renderTable(allApplications);
-});
-
-onSnapshot(collection(db, "samagra_ekyc_requests"), snap => {
-  const ekyc = snap.docs.map(d => ({
-    id: d.id,
-    _collection: "samagra_ekyc_requests",
-    ...d.data()
-  }));
-  allApplications = [...allApplications, ...ekyc];
-  renderTable(allApplications);
-});
-onSnapshot(collection(db, "mpbhojApplications"), snap => {
-  const mpbhoj = snap.docs.map(d => ({
-    id: d.id,
-    _collection: "mpbhojApplications",
-    ...d.data()
-  }));
-
-  allApplications = [...allApplications, ...mpbhoj];
-  renderTable(allApplications);
-});
-
-function formatDate(timestamp) {
-  if (!timestamp) return "-";
-
-  const date = timestamp.toDate();
-  return date.toLocaleDateString("hi-IN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
-  });
-}
-    const IGNORE_FIELDS = ["id", "_collection"];
-
-function formatLabel(key) {
-  return key
-    .replace(/([A-Z])/g, " $1")
-    .replace(/^./, s => s.toUpperCase());
-}
-
-function renderTable(data) {
-    
-  const table = document.getElementById("dataTable");
-  table.innerHTML = "";
-
-  data.forEach(item => {
-    table.innerHTML += `
-      <tr class="border-b hover:bg-gray-50">
-        <td class="p-3 text-blue-700 font-bold cursor-pointer underline"
-    onclick="openDetails('${item.id}')">
-  ${item.studentName || item.applicantName || "-"}
-</td>
-        <td class="p-3">${item.serviceType || "-"}</td>
-<td>${item.memberId || "-"}</td>
-<td class="p-3">
-  ${formatDate(item.createdAt)}
-</td>
-      <td class="p-3">
-  <select onchange="changeStatus('${item.id}', this.value)"
-    class="border px-2 py-1">
-    <option value="pending" ${item.status === "pending" ? "selected" : ""}>🟡 Pending</option>
-    <option value="complete" ${item.status === "complete" ? "selected" : ""}>🟢 Complete</option>
-    <option value="reject" ${item.status === "reject" ? "selected" : ""}>🔴 Reject</option>
-  </select>
-</td>
-
-
-<td class="p-3">
-  <button
-    onclick="deleteApplication('${item.id}')"
-    class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700">
-    🗑 Delete
-  </button>
-</td>
-
-</tr>
-
+/* ===== RENDER ===== */
+function render(data) {
+  const t = document.getElementById("dataTable");
+  t.innerHTML = "";
+  data.forEach(i => {
+    t.innerHTML += `
+      <tr class="border-b">
+        <td class="p-3 text-blue-700 font-bold cursor-pointer"
+            onclick="openDetails('${i.id}')">
+          ${i.studentName || i.applicantName || "-"}
+        </td>
+        <td class="p-3">${i.serviceType || "-"}</td>
+        <td class="p-3">${i.memberId || "-"}</td>
+        <td class="p-3">${formatDate(i.createdAt)}</td>
+        <td class="p-3">
+          <select onchange="changeStatus('${i.id}',this.value)" class="border">
+            <option value="pending" ${i.status==="pending"?"selected":""}>Pending</option>
+            <option value="complete" ${i.status==="complete"?"selected":""}>Complete</option>
+            <option value="reject" ${i.status==="reject"?"selected":""}>Reject</option>
+          </select>
+        </td>
+        <td class="p-3">
+          <button onclick="del('${i.id}')" class="bg-red-600 text-white px-2 py-1 text-xs rounded">
+            Delete
+          </button>
+        </td>
+      </tr>
     `;
   });
 }
 
-window.openDetails = (id) => {
+/* ===== HELPERS ===== */
+function formatDate(ts){
+  if(!ts) return "-";
+  return ts.toDate().toLocaleDateString("hi-IN");
+}
 
-  const item = allApplications.find(a => a.id === id);
-  if (!item) return;
+/* ===== ACTIONS ===== */
+window.del = async id => {
+  const i = allApplications.find(x=>x.id===id);
+  if(!i) return;
+  if(confirm("Delete?")){
+    await deleteDoc(doc(db,i._collection,id));
+  }
+};
 
-  const applicationNumber = "AIO-" + item.id.substring(0, 8).toUpperCase();
+window.changeStatus = async (id,val)=>{
+  const i = allApplications.find(x=>x.id===id);
+  if(i) await updateDoc(doc(db,i._collection,id),{status:val});
+};
 
-  // ---------- DETAILS MODAL ----------
-  let html = "";
+window.logout = ()=> signOut(auth).then(()=>location.href="login.html");
 
-  Object.keys(item).forEach(key => {
-    if (IGNORE_FIELDS.includes(key)) return;
+/* ===== SEARCH ===== */
+document.getElementById("searchInput").addEventListener("input",e=>{
+  const k = e.target.value.toLowerCase();
+  render(allApplications.filter(a =>
+    (a.applicantName||a.studentName||"").toLowerCase().includes(k)
+  ));
+});
 
-    const value =
-      key === "createdAt"
-        ? formatDate(item.createdAt)
-        : item[key];
-
-    html += `
-      <div>
-        <div class="text-xs text-gray-500">
-          ${formatLabel(key)}
-        </div>
-        <div class="font-bold">
-          ${value || "-"}
-        </div>
-      </div>
-    `;
-  });
-
-  document.getElementById("detailBody").innerHTML = html;
-
-  // ---------- PDF CONTENT ----------
- document.getElementById("pdfContent").innerHTML = `
-  <div style="
-    position:relative;
-    padding:30px;
-    border:2px solid #000;
-    font-family:Noto Sans Devanagari;
-  ">
-
-    <!-- HEADER -->
-    <div style="text-align:center;margin-bottom:20px">
-      <h2>AllInOne MP – आवेदन विवरण</h2>
-      <p style="font-weight:bold">
-        आवेदन क्रमांक: ${applicationNumber}
-      </p>
-    </div>
-
-    <!-- BASIC INFO -->
-<p><b>नाम:</b> ${item.studentName || item.applicantName || "-"}</p>
-    <p><b>सेवा:</b> ${item.serviceType || "-"}</p>
-    <p><b>मोबाइल:</b> ${item.mobile || "-"}</p>
-    <p><b>आवेदन तिथि:</b> ${formatDate(item.createdAt)}</p>
-
-    <!-- 🔥 QR FIXED POSITION -->
-    <div id="qrBox" style="
-      position:absolute;
-      top:30px;
-      right:30px;
-      width:120px;
-      height:120px;
-      border:1px solid #000;
-      padding:5px;
-      background:#fff;
-    "></div>
-
-    <!-- DETAILS TABLE -->
-    <table style="width:100%;border-collapse:collapse;margin-top:20px">
-      ${Object.keys(item).map(key => {
-        if (IGNORE_FIELDS.includes(key)) return "";
-
-        const value =
-          key === "createdAt"
-            ? formatDate(item.createdAt)
-            : item[key];
-
-        return `
-          <tr>
-            <td style="border:1px solid #000;padding:8px;font-weight:bold;width:40%">
-              ${formatLabel(key)}
-            </td>
-            <td style="border:1px solid #000;padding:8px">
-              ${value || "-"}
-            </td>
-          </tr>
-        `;
-      }).join("")}
-    </table>
-
-    <p style="margin-top:25px;font-size:12px;text-align:right">
-      यह दस्तावेज़ डिजिटल रूप से जनरेट किया गया है।
-    </p>
-
-  </div>
-`;
-
-
-  // ---------- QR CODE ----------
-setTimeout(() => {
-  const qrDiv = document.getElementById("qrBox");
-  qrDiv.innerHTML = "";
-
-  new QRCode(qrDiv, {
-    text: `Application No: ${applicationNumber}
-Name: ${item.applicantName || ""}
-Service: ${item.serviceType || ""}`,
-    width: 120,
-    height: 120
-  });
-}, 100);
-
+/* ===== DETAILS ===== */
+window.openDetails = id => {
+  const i = allApplications.find(x=>x.id===id);
+  if(!i) return;
+  document.getElementById("detailBody").innerHTML =
+    Object.entries(i).map(([k,v])=>`
+      <div><div class="text-xs text-gray-500">${k}</div><div class="font-bold">${v||"-"}</div></div>
+    `).join("");
   document.getElementById("detailModal").classList.remove("hidden");
   document.getElementById("detailModal").classList.add("flex");
 };
 
+window.closeDetails = ()=>document.getElementById("detailModal").classList.add("hidden");
 
-
-window.closeDetails = () => {
-  document.getElementById("detailModal").classList.add("hidden");
+window.downloadPDF = ()=>{
+  const el=document.getElementById("detailBody");
+  html2pdf().from(el).save("Application.pdf");
 };
-
-window.downloadPDF = () => {
-  const el = document.getElementById("pdfContent");
-  el.classList.remove("hidden");
-
-  html2pdf().from(el).set({
-    filename: `Application.pdf`,
-    margin: 0.5
-  }).save().then(()=>el.classList.add("hidden"));
-};
-
-window.handleLogout = function () {
-    signOut(auth)
-      .then(() => {
-        // logout ke baad kaha jana hai
-        window.location.href = "index.html"; // ya login.html
-      })
-      .catch((error) => {
-        alert("Logout me problem aayi");
-        console.error(error);
-      });
-  };
-    const searchInput = document.getElementById("searchInput");
-
-  searchInput.addEventListener("input", () => {
-    const keyword = searchInput.value.toLowerCase();
-
-    const filteredData = allApplications.filter(item =>
-      (item.applicantName || "").toLowerCase().includes(keyword)
-    );
-
-    renderTable(filteredData);
-  });
-   window.changeStatus = async function (id, value) {
-  const item = allApplications.find(a => a.id === id);
-  if (!item) return;
-
-  await updateDoc(
-    doc(db, item._collection, id),
-    { status: value }
-  );
-};
-
-
 </script>
 
 </body>
