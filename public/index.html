@@ -33,9 +33,9 @@
         <div class="container mx-auto text-center">
             <h2 class="text-3xl md:text-4xl font-bold mb-6">सभी सरकारी सेवाएँ, अब आपकी उंगलियों पर</h2>
             <div class="max-w-2xl mx-auto relative">
-                <input type="text" id="searchInput" placeholder="सेवा का नाम खोजें (जैसे: आय प्रमाण पत्र, समग्र...)" class="w-full py-4 px-6 rounded-lg text-gray-800 focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-xl">
-                <button class="absolute right-3 top-3 bg-blue-600 p-2 px-4 rounded-md hover:bg-blue-700">
-                    <i class="fas fa-search"></i>
+               <input type="text" id="searchInput"onkeyup="searchService()"placeholder="सेवा का नाम खोजें..."class="w-full py-4 px-6 rounded-lg"/>
+                <button onclick="searchService()" class="absolute right-3 top-3 bg-blue-600 p-2 px-4 rounded-md">
+                <i class="fas fa-search"></i>
                 </button>
             </div>
              <div class="mt-8 flex justify-center gap-6 text-sm opacity-90">
@@ -56,16 +56,16 @@
                         <button onclick="filterServices('all')" class="category-tab active w-full text-left p-4 rounded-xl flex items-center gap-3 transition-all">
                             <i class="fas fa-th-large"></i> सभी सेवाएँ
                         </button>
-                        <button onclick="filterServices('social')" class="category-tab w-full text-left p-4 rounded-xl flex items-center gap-3 hover:bg-blue-50 text-gray-600 transition-all">
+<button data-category="social" onclick="filterServices('social')" class="category-tab">
                             <i class="fas fa-users"></i> समग्र एवं सामाजिक
                         </button>
-                        <button onclick="filterServices('land')" class="category-tab w-full text-left p-4 rounded-xl flex items-center gap-3 hover:bg-blue-50 text-gray-600 transition-all">
+<button data-category="social" onclick="filterServices('land')" class="category-tab">
                             <i class="fas fa-map-marked-alt"></i> भू-अभिलेख
                         </button>
-                        <button onclick="filterServices('certificates')" class="category-tab w-full text-left p-4 rounded-xl flex items-center gap-3 hover:bg-blue-50 text-gray-600 transition-all">
+<button data-category="social" onclick="filterServices('certificates')" class="category-tab">
                             <i class="fas fa-file-invoice"></i> प्रमाण पत्र
                         </button>
-                        <button onclick="filterServices('form')" class="category-tab w-full text-left p-4 rounded-xl flex items-center gap-3 hover:bg-blue-50 text-gray-600 transition-all">
+<button data-category="social" onclick="filterServices('form')" class="category-tab">
                             <i class="fas fa-university"></i> यूनिवर्सिटी/फार्म
                         </button>
                     </div>
@@ -213,7 +213,7 @@
             let cards = document.getElementsByClassName('service-card');
             for (let card of cards) {
                 let text = card.innerText.toLowerCase();
-                card.style.display = text.includes(input) ? "block" : "none";
+            card.style.display = text.includes(input) ? "" : "none";
             }
         }
 
@@ -222,10 +222,12 @@
             const cards = document.querySelectorAll('.service-card');
             const tabs = document.querySelectorAll('.category-tab');
 
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-                if(tab.getAttribute('onclick').includes(category)) tab.classList.add('active');
-            });
+           tabs.forEach(tab => {
+    tab.classList.remove('active');
+    if (tab.dataset.category === category) {
+        tab.classList.add('active');
+    }
+});
 
             cards.forEach(card => {
                 if (category === 'all' || card.getAttribute('data-category') === category) {
@@ -240,6 +242,7 @@
 
 </body>
 </html>
+
 
 
 
