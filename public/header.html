@@ -15,18 +15,102 @@
 
   <!-- ✅ Custom Header CSS (ticker, animation, extra style) -->
   <link rel="stylesheet" href="assets/css/header.css">
+
+
+
+
+
+  
+<style>
+  .top-bar {
+  display: flex;
+  align-items: center;
+  background: #1e3a8a; /* blue */
+  color: white;
+  height: 50px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+/* LEFT SCROLLING PART */
+.marquee {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-text {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scroll-text 18s linear infinite;
+}
+
+/* RIGHT FIXED PART */
+.access-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 15px;
+  white-space: nowrap;
+  background: #1e3a8a;
+}
+
+.font-controls button {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* ANIMATION */
+@keyframes scroll-text {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+</style>
+
+
+
+
+  
 </head>
 
 <body>
 
-<!-- ================= TOP BAR ================= -->
+  <div class="top-bar">
+  <!-- LEFT : Moving text -->
+  <div class="marquee">
+    <div class="marquee-text">
+      यह एक निजी सहायता पोर्टल है, मध्य प्रदेश शासन की आधिकारिक वेबसाइट नहीं है।
+    </div>
+  </div>
+
+  <!-- RIGHT : Fixed content -->
+  <div class="access-tools">
+    <span>Screen Reader Access</span>
+    <span class="font-controls">
+      <button>A-</button>
+      <button>A</button>
+      <button>A+</button>
+    </span>
+  </div>
+</div>
+
+
+<!-- ================= TOP BAR ================= 
 <div class="bg-blue-900 text-white text-xs py-2 px-4 flex justify-between items-center">
   <div>यह एक निजी सहायता पोर्टल है, मध्य प्रदेश शासन की आधिकारिक वेबसाइट नहीं है।</div>
   <div class="flex gap-4">
     <a href="#" class="hover:underline">Screen Reader Access</a>
     <span>A- | A | A+</span>
   </div>
-</div>
+</div>-->
 
 <!-- ================= MAIN HEADER ================= -->
 <header class="bg-white shadow-md sticky top-0 z-50">
@@ -93,6 +177,7 @@
 
 </body>
 </html>
+
 
 
 
